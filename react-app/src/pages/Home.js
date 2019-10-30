@@ -5,6 +5,9 @@ import { TopicCard } from '../components/TopicCard';
 export class Home extends React.Component {
     constructor() {
         super();
+        this.state = {
+
+        };
     }
 
     componentWillMount() {

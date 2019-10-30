@@ -1,42 +1,72 @@
 import React from 'react';
-import { Container } from 'react-bootstrap';
-
-import { TopicCard } from './TopicCard';
+import { Badge, Container, Nav, Navbar } from 'react-bootstrap';
 
 export class Favorites extends React.Component {
     constructor() {
         super();
         
         let generate = [];
-        for (let i = 0; i < 25; i++) {
-            generate.push(`Item ${i+1}`);
+        const favoriteCount = Math.floor(Math.random() * 150);
+        console.log(favoriteCount);
+        for (let i = 0; i < favoriteCount; i++) {
+            generate.push({
+                id: i+1,
+                name: `Favorite ${i+1}`,
+                notificationCount: Math.floor(Math.random()*100) <= 25 ? Math.floor(Math.random() * 15) : 0
+            });
         }
+
         this.state = {
-            favorites: generate
+            favorites: generate,
+            selected: 0
         };
     }
+
+    onFavoriteSelect = (index) => {
+        let { favorites } = this.state;
+        favorites[index].notificationCount = 0;
+        this.setState({
+            selected: favorites[index].id,
+            favorites
+        });
+    };
 
     render() {
         const { favorites } = this.state;
 
         let favoritesContent;
         if (favorites.length > 0) {
-            favoritesContent = favorites.map((name) => {
+            favoritesContent = favorites.map((favorite, index) => {
+                const selected = this.state.selected === favorite.id ? ' selected':'';
+                
                 return (
-                    <TopicCard name={name} />
-                );
-            })
+                <li 
+                key={favorite.id}
+                className={`favorites-item${selected}`}
+                onClick={() => this.onFavoriteSelect(index)}
+                href="/Logout"
+                >
+                    <a className={`favorites-name${selected}`} >
+                        {favorite.name}
+                    </a>
+                    {favorite.notificationCount > 0 &&
+                    <Badge className="ml-2" variant="info">
+                        {favorite.notificationCount}
+                    </Badge>
+                    }
+                </li>
+            );});
         } else {
             favoritesContent = (<p className="text-center">No favorites! :(</p>);
         }
 
         return (
-            <Container className="border-right pr-0">
+            <Container className="border-right favorites-items">
                 <h3>Favorites</h3>
-                <hr className="mt-0" />
-                <div className="scroll">
+                <hr className="mt-0" style={{marginLeft: '-30px', marginRight: '-15px'}} />
+                <ul className="favorites-list">
                     {favoritesContent}
-                </div>
+                </ul>
             </Container>
         );
     }
