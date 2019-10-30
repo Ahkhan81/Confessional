@@ -23,7 +23,7 @@ Patrick Romero
 
 ## Connecting
 
-Once the webserver is running you can connect to `127.0.0.1:8000` to land at the API root. 
+Once the webserver is running you can connect to `127.0.0.1:8000/api` to land at the API root. 
 Accessing any of the pages will show data in those database tables. Authorization to come.
 
 
