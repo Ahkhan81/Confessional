@@ -1,0 +1,46 @@
+.scroll {
+    height: 100vh;
+    overflow-y: scroll;
+}
+
+.content-container {
+    padding-top: 71px;
+}
+
+.nav-user-info > a {
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.favorites-list {
+    list-style: none;
+    padding-left: 15px;
+    margin-right: -15px;
+    margin-left: -15px;
+    margin-top: -16px;
+    margin-bottom: -15px;
+    height: 88.25vh;
+    overflow-y: scroll;
+}
+
+.favorites-item {
+    text-decoration: none !important;
+    cursor: pointer;
+}
+
+.favorites-item:hover, .favorites-item.selected {
+    background-color: #f0f0f0;
+}
+
+.favorites-name {
+    color: #6e6e6e;
+    text-decoration: none !important;
+}
+
+.favorites-name:hover {
+    color: #bdbdbd;
+}
+
+.favorites-name.selected {
+    font-weight: bold;
+}
