@@ -1,35 +1,69 @@
 import React from 'react';
 
+import { ContentView } from '../components/ContentView';
 import { TopicCard } from '../components/TopicCard';
 
 export class Home extends React.Component {
     constructor() {
         super();
         this.state = {
-
+            expandDefault: ["Events", "Majors"]
         };
     }
 
     componentWillMount() {
         //TODO: Get main topics from backend
-        let topics = ["Administration", "Events", "Clubs", "Sports", "SGA", "Majors"];
+        let topics = [
+            {
+                name: "Administration",
+                url: "/Topic/Administration"
+            },
+            {
+                name: "Events",
+                url: "/Topic/Events"
+            },
+            {
+                name: "Clubs",
+                url: "/Topic/Clubs"
+            },
+            {
+                name: "Sports",
+                url: "/Topic/Sports"
+            },
+            {
+                name: "SGA",
+                url: "/Topic/SGA"
+            },
+            {
+                name: "Majors",
+                url: "/Topic/Majors"
+            }
+        ];
         this.setState({
             topics
         });
     }
 
     render() {
-        const { topics } = this.state;
+        const { expandDefault, topics } = this.state;
+        
+        const content = topics.map((topic) => {
+            const { name, url } = topic;
+            const isExpanded = expandDefault.includes(name);
+
+            return (
+                <TopicCard
+                    key={name} 
+                    name={name} 
+                    url={url}
+                    expanded={isExpanded}
+                />
+            );
+        });
         
         return (
             <React.Fragment>
-                <h3>Home</h3>
-                <hr className="mt-0" />
-                {topics.map((name) => {
-                    return (
-                        <TopicCard name={name} />
-                    );
-                })}
+                <ContentView headerName="Home" breadCrumbName="Home" component={content} />
             </React.Fragment>
         );
     }

@@ -12,6 +12,15 @@
     padding-bottom: 0px;
 }
 
+.clickable {
+    cursor: pointer;
+}
+
+.accordion > .card:only-of-type {
+    border-radius: calc(.25rem - 1px) calc(.25rem - 1px) calc(.25rem - 1px) calc(.25rem - 1px) !important;
+    border-bottom: 1px solid rgba(0,0,0,.125) !important;
+}
+
 .favorites-list {
     list-style: none;
     padding-left: 15px;
@@ -20,7 +29,7 @@
     margin-top: -16px;
     margin-bottom: -15px;
     height: 88.25vh;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .favorites-item {
@@ -43,4 +52,21 @@
 
 .favorites-name.selected {
     font-weight: bold;
+}
+
+.thread-preview.card {
+    height: 300px;
+}
+
+.thread-preview > .card-body {
+    overflow-y: auto;
+}
+
+.comment {
+    border-radius: calc(.25rem - 1px) calc(.25rem - 1px) calc(.25rem - 1px) calc(.25rem - 1px) !important;
+    border: 1px solid rgba(0,0,0,.125) !important;
+}
+
+.red {
+    color: #ad0000;
 }
