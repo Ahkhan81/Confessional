@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # This is an auto-generated Django model module.
 # You'll have to do the following manually to clean this up:
 #   * Rearrange models' order
@@ -242,3 +243,104 @@ class User_logins(models.Model):
    class Meta:
        managed = False
        db_table = 'user_logins'
+=======
+#Adapted from  `confess1.sql` in lhc branch
+
+from django.db import models
+
+# Create your models here.
+class Admin(models.Model):
+    email = models.CharField(max_length=40)
+    fname = models.CharField(max_length=50)
+    lname = models.CharField(max_length=50)
+    phone = models.CharField(max_length=10)
+    pwd = models.CharField(max_length=12)
+
+    def __str__(self):
+        return '{} {} {} {} {}'.format(self.email, self.fname, self.lname, self.phone, self.pwd)
+
+class Actions(models.Model):
+    REMOVE_MEMBER = 'Remove Member'
+    VERIFY_EVENT = 'Verify Event'
+    APPROVE_MEMBER = 'Approve Member'
+    RESTRICT_MEMBER = 'Restrict Member'
+    UPDATE_MEMBER = 'Update Member'
+    #CREATE_NEW_ACTION = 'Create New Action'
+    
+    ADMIN_ACTION_TYPES = [
+        (REMOVE_MEMBER, ('Remove a member')),
+        (VERIFY_EVENT, ('Verify an event')),
+        (APPROVE_MEMBER, ('Approve a member')),
+        (RESTRICT_MEMBER, ('Restrict a member')),
+        (UPDATE_MEMBER, ('Update a member')),
+    ]
+    action_type = models.CharField(max_length=50, choices=ADMIN_ACTION_TYPES, unique=True)
+
+class AdminActions(models.Model):
+    action_type = models.ForeignKey(
+        Actions, to_field="action_type", db_column="action_type", on_delete=models.CASCADE
+    )
+    admin_id = models.ForeignKey(
+        Admin, on_delete=models.CASCADE
+    )
+    action_time = models.DateTimeField(auto_now=True)
+    service_id = models.IntegerField
+
+class User(models.Model):
+
+    FACULTY = 'Faculty'
+    STAFF = 'Staff'
+    STUDENT = 'Student'
+    
+    USER_TYPES = [
+        (FACULTY, ('Faculty')),
+        (STAFF, ('Staff')),
+        (STUDENT, ('Student')),
+    ]
+
+    username = models.CharField(max_length=30)
+    fname = models.CharField(max_length=50)
+    lname = models.CharField(max_length=50)
+    user_email = models.CharField(max_length=40)
+    user_type = models.CharField(max_length=15, choices=USER_TYPES)
+
+class User_logins(models.Model):
+    timestamp = models.DateTimeField(auto_now=True)
+    #RIGHT HERE IS A BIG ISSUE, WE SHOULD TALK ABOUT IT TOMORROW LEON
+
+class Hashes(models.Model):
+    user_id = models.ForeignKey(
+        User, on_delete=models.CASCADE
+    )
+    username = models.CharField(max_length=30)
+    hashval = models.CharField(max_length=128)
+
+class Categories(models.Model):
+    category_name = models.CharField(max_length=40, unique=True)
+    admin_id = models.ForeignKey(
+        Admin, on_delete=models.CASCADE
+    )
+
+class Message(models.Model):
+    user_id = models.ForeignKey(
+        User, on_delete=models.CASCADE
+    )
+    msg_time = models.DateTimeField(auto_now=True)
+    msg_text = models.TextField
+    category_id = models.ForeignKey(
+        Categories, on_delete=models.CASCADE
+    )
+
+class User_group(models.Model):
+    group_num = models.IntegerField
+    category_id = models.ForeignKey(
+        Categories, related_name="user_group_cat_id", on_delete=models.CASCADE
+    )
+    category_name = models.ForeignKey(
+        Categories, to_field="category_name", db_column="category_name", related_name="user_group_cat_name", on_delete=models.CASCADE
+    )
+    user_name = models.CharField(max_length=30)
+    user_id = models.ForeignKey(
+        User, on_delete=models.CASCADE
+    )
+>>>>>>> Added the other models for handling messages. Things broke, seem to be fixed now. Hoping everything works.
