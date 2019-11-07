@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+function hexString(buffer) {
+  const byteArray = new Uint8Array(buffer);
+  const hexCodes = [...byteArray].map(value => {
+    const hexCode = value.toString(16);
+    const paddedHexCode = hexCode.padStart(2, '0');
+    return paddedHexCode;
+  });
+  return hexCodes.join('');
+}
+</script>
+<script>
+const text = 'Yowee! An obscure body in the S-K System, your majesty. The inhabitants refer to it as the planet Earth.';
+//encodes text string into a 256 bit digest using SHA-256.
+
+function digestMessage(message) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(message);
+  return window.crypto.subtle.digest('SHA-256', data);
+}
+</script>
+</head>
+<body>
+
+<form>
+Select your favorite fruit:
+<select id="mySelect">
+  <option value="apple">Apple</option>
+  <option value="orange">Orange</option>
+  <option value="pineapple">Pineapple</option>
+  <option value="banana">Banana</option>
+</select>
+</form>
+
+<p>Click the button to return the value of the selected fruit.</p>
+
+<button type="button" onclick="myFunction()">Try it</button>
+
+<p id="demo"></p>
+
+<script>
+function myFunction() {
+    var x = document.getElementById("mySelect").value;
+    document.getElementById("demo").innerHTML = x;
+}
+</script>
+
+<script>
+digestMessage(text).then(digestValue => {
+  //console.log(hexString(digestValue));
+  x = hexString(digestValue);
+  document.getElementById("demo").innerHTML = x;
+});
+</script>
+
+</body>
+</html>
+
+
+
