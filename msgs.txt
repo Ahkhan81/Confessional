@@ -1,0 +1,26 @@
+INSERT INTO message
+(user_id, msg_id, msg_time,  msg_text, category_id, msg_thread)
+VALUES
+(1, '9LXZC5ULA26M8OU80T58YFRDPAWXHPFY',  NOW(), 'The quick brown Ice jumped over ME!', 7, 1),
+(2, 'R6R9PG8WJBA8OJONKQYDLM7QY62TRKO9',  NOW(), 'The quick brown Heiroglyphs jumped over YOU!', 7, 1),
+(4, 'K9E7FXBJUVRTTC13O860UH3H0S9VZC72',  NOW(), 'The quick brown Meat Cleaver jumped over HIM!', 9, 1), 
+(5, 'VC98BCEV7UZ8UNXP1XEHUL3ZSC6NV6PE',  NOW(), 'The quick brown Slayer jumped over HER!', 8, 1), 
+(3, 'EHTFUJAHCGD79ZZLJTOI8J4R34RDC6TO',  NOW(), 'The quick brown Artifact jumped over THEM!', 1, 1), 
+(3, 'Y012JR5RH4TFUX7XBQK8VYMKWCTDNY4D',  NOW(), 'The quick brown Romanticism jumped over THE MOON!', 7, 1), 
+(2, '3LYVCJK9MZ5YFZVNGR4K7T5XYZ9Z712C',  NOW(), 'The quick brown Pears jumped over YOUR SHOES!', 8, 1), 
+(5, '9W4K94RXQDH6WQVGD1DWSTTFRUQXBYEF',  NOW(), 'The quick brown Yggdrasil jumped over HARPOONS!', 10, 1), 
+(2, 'NZTYGE76KMC66922WLGVSIFE2UA73YPZ',  NOW(), 'The quick brown Howl's Castle jumped over 2-in-1!', 9, 1), 
+(1, 'DTZ4D04Q70OQ5N3GRXH2ROG8WNTSINQ3',  NOW(), 'The quick brown Creosote Oil jumped over A COW!', 10, 1), 
+(5, 'BXBXI7C7QQL7CWW1TF69Y6QCVIL2EPX3',  NOW(), 'The quick brown The Tower jumped over ANOTHER FOX!', 1, 1), 
+(4, 'J3UNDARAL74OMQ83HJZ78618LV12CQNX',  NOW(), 'The quick brown Dust Bunnies jumped over Mr. Watch!', 7, 1), 
+(4, '86KWOU5UDYG0ZPR9U4UTJA3YBIBH4093',  NOW(), 'The quick brown Banana Slugs jumped over Isaac!', 8, 1), 
+(3, 'XSYC0J2MXQW0FTYY01EL64NVF3912T9G',  NOW(), 'The quick brown Hitscan jumped over Alan!', 10, 1), 
+(2, '76GNDK89Y1FKVIZYRCCJNKHANY8GIJYL',  NOW(), 'The quick brown Tsar Bomba jumped over Vivec', 9, 1), 
+(1, '76GNDK89Y1FKVIZYRCCJNKHANY8GIJYL',  NOW(), 'The quick brown Dada jumped over Mournhold', 1, 1), 
+(5, '0PWN55WYYECTO0XIAFMC59DMRSBF9N3D',  NOW(), 'The quick brown Frogs jumped over Grand Exchange', 8, 1), 
+(2, 'XUX15T8G47NP1UW6SUQW9KWGEGHJ5RJB',  NOW(), 'The quick brown Leon jumped over A difficult puzzle', 7, 1), 
+(5, 'CW0LDIUN4FTHQ9WX899TSWAWEBQ3A441',  NOW(), 'The quick brown Lantern jumped over A HORSE!', 10, 1), 
+(3, 'VTM41ZD82C4VYWLTU4UVX6BPIG6K4KEH',  NOW(), 'The quick brown Roadrunner jumped over A low Spade!", 1, 1);
+
+
+
