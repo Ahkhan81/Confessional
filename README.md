@@ -10,9 +10,11 @@ Patrick Romero
 
 ## Installation
 
-* Python3, pip3 required
+* Python3, pip3, mysql, mysqlclient, mysqlserver, npm required
+* https://www.npmjs.com/get-npm
 * `pip3 install Django`
 * `pip3 install Djangorestframework`
+* `pip3 install mysqlclient`
 
 ## To Start The Django Webserver
 * Clone the repository to your file system.
@@ -20,6 +22,11 @@ Patrick Romero
 * `python3 manage.py makemigrations`
 * `python3 manage.py migrate`
 * `python3 manage.py runserver`
+
+## To Start The React Webserver
+* `cd Confessional/react-app`
+* `npm install`
+* `npm start`
 
 ## Connecting
 
