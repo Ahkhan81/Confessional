@@ -6,7 +6,7 @@ export class Favorites extends React.Component {
         super();
         
         let generate = [];
-        const favoriteCount = Math.floor(Math.random() * 150);
+        const favoriteCount = Math.floor(Math.random() * 10);
         console.log(favoriteCount);
         for (let i = 0; i < favoriteCount; i++) {
             generate.push({
