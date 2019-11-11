@@ -19,13 +19,22 @@ export class Thread extends React.Component {
                     name: "Events",
                     url: "/Topic/Events"
                 }
-            ]
+            ],
+            comment: {
+                text: "",
+                comments: []
+            }
         };
     }
 
     componentDidMount() {
         const { id } = this.props.match.params;
     }
+
+    addComment = () => {
+        const text = this.state.comment.text.trim();
+        console.log("Add Comment Text: " + text);
+    };
 
     render() {
         const { id } = this.props.match.params; 
@@ -54,9 +63,26 @@ export class Thread extends React.Component {
                         <Form.Group>
                             <label htmlFor="comment"><h6>Add a Comment</h6></label>
                             <InputGroup>
-                                <Form.Control id="comment" as="textarea" rows={3} style={{resize: "vertical"}} />
+                                <Form.Control 
+                                    id="comment" 
+                                    as="textarea" 
+                                    rows={3} 
+                                    style={{resize: "vertical"}} 
+                                    onChange={(event) => {
+                                        this.setState({
+                                            comment: {
+                                                ...this.state.comment,
+                                                text: event.target.value
+                                            }
+                                        });
+                                    }}
+                                />
                                 <InputGroup.Append>
-                                    <Button variant="secondary">
+                                    <Button 
+                                        variant="secondary"
+                                        disabled={this.state.comment.text.trim().length == 0}
+                                        onClick={() => this.addComment()}
+                                    >
                                         <FontAwesomeIcon icon={faComment} />
                                     </Button>
                                 </InputGroup.Append>

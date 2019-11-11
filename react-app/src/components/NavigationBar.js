@@ -1,138 +1,68 @@
-import React from 'react';
-import { Button, Col, Form, FormControl, Image, InputGroup, Modal, Nav, NavDropdown, Navbar, Row } from 'react-bootstrap';
+import React, { useCallback } from 'react';
+import { Button, FormControl, Image, InputGroup, Modal, Nav, NavDropdown, Navbar } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faSignInAlt, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { useStore } from "../store/useStore";
 
-export class NavigationBar extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            modal: {
-                show: false,
-                title: "",
-                body: null,
-                footer: null
-            }
-        };
-    }
+export const NavigationBar = () => {
+    const {
+        state: {
+            user
+        },
+        dispatch
+    } = useStore();
 
-    signIn = () => {
-        const body = (
-            <p>Signing in... <FontAwesomeIcon icon={faSpinner} pulse /></p>
-        );
+    user.fullName = `${user.firstName} ${user.lastName}`;
         
-        this.setState({
-            modal: {
-                show: true,
-                title: "Sign In",
-                body,
-                footer: null
-            }
-        }, () => {
-            setTimeout(() => {
-                this.setState({
-                    modal: {
-                        show: false,    
-                        title: null,
-                        body: null,
-                        footer: null
-                    }
-                });
-                this.props.signInUser();
-            }, 2500);
-        });
-    }
+    const userInfoContent = (
+        <>
+            <Image className="pr-2" src={user.profileImage} roundedCircle />
+            <strong>{user.fullName}</strong>
+        </>
+    );
 
-    signOut = () => {
-        const body = (
-            <p>Signing out... <FontAwesomeIcon icon={faSpinner} pulse /></p>
-        );
-        
-        this.setState({
-            modal: {
-                show: true,
-                title: "Sign Out",
-                body,
-                footer: null
-            }
-        }, () => {
-            setTimeout(() => {
-                this.setState({
-                    modal: {
-                        show: false,    
-                        title: null,
-                        body: null,
-                        footer: null
-                    }
-                });
-                this.props.signOutUser();
-            }, 1500);
-        });
-    };
+    const login = useCallback(() => dispatch({ type: "AUTH_SHOW_MODAL", show: true }), [dispatch]);
+    function logout() {
+        dispatch({ type: "USER_LOGOUT" });
+    }
     
-    render() {
-        const { modal } = this.state;
-        const { user } = this.props;
-        
-        const userInfoContent = (
-            <>
-                <Image className="pr-2" src={user.profileImage} roundedCircle />
-                <strong>{user.fullName}</strong>
-            </>
-        );
-        
-        return (
-            <>
-                <Modal show={modal.show}>
-                    <Modal.Header>
-                        <Modal.Title>{modal.title}</Modal.Title>
-                    </Modal.Header>
-
-                    <Modal.Body>
-                        {modal.body}
-                    </Modal.Body>
-
-                    <Modal.Footer>
-                        {modal.footer}
-                    </Modal.Footer>
-                </Modal>
-
-                <Navbar bg="light" expand="lg" fixed="top" className="border-bottom">
-                    <LinkContainer to="/">
-                        <Navbar.Brand>Confessional</Navbar.Brand>
-                    </LinkContainer>
-                    <Navbar.Toggle />
-                    <Navbar.Collapse>
-                        <Nav>
-                            {/* Left side of  side of Navbar */}
-                            <InputGroup>
-                                <FormControl type="text" placeholder="Search" />
-                                <InputGroup.Append>
-                                    <Button variant="success">
-                                        <FontAwesomeIcon icon={faSearch} />
-                                    </Button>
-                                </InputGroup.Append>
-                            </InputGroup>
-                        </Nav>
-                        <Nav className="ml-auto">
-                            {/* Right side of Navbar */}
-                            {user.isSignedIn && 
-                            <NavDropdown title={userInfoContent} className="nav-user-info">
-                                Signed in as <strong>{user.fullName}</strong>
-                                <NavDropdown.Item>
-                                    <Button variant="danger" onClick={this.signOut}>Sign Out</Button>
-                                </NavDropdown.Item>
-                            </NavDropdown>
-                            }
-                            {!user.isSignedIn &&
-                            <Nav.Link onClick={this.signIn}>Sign In</Nav.Link>
-                            }
-                        </Nav>
-                    </Navbar.Collapse>
-                    {/* <Navbar.Brand>Confessional</Navbar.Brand> */}
-                </Navbar>
-            </>
-        );
-    }
+    return (
+        <Navbar bg="light" expand="lg" fixed="top" className="border-bottom">
+            <LinkContainer to="/">
+                <Navbar.Brand>Confessional</Navbar.Brand>
+            </LinkContainer>
+            <Navbar.Toggle />
+            <Navbar.Collapse>
+                <Nav>
+                    {/* Left side of  side of Navbar */}
+                    <InputGroup>
+                        <FormControl type="text" placeholder="Search" />
+                        <InputGroup.Append>
+                            <Button variant="success">
+                                <FontAwesomeIcon icon={faSearch} />
+                            </Button>
+                        </InputGroup.Append>
+                    </InputGroup>
+                </Nav>
+                <Nav className="ml-auto">
+                    {/* Right side of  side of Navbar */}
+                    {user.loggedIn && 
+                    <NavDropdown title={userInfoContent} className="nav-user-info">
+                        Signed in as <strong>{user.fullName}</strong>
+                        <NavDropdown.Item>
+                            <Button variant="danger" onClick={logout}>Logout</Button>
+                        </NavDropdown.Item>
+                    </NavDropdown>
+                    }
+                    {!user.loggedIn &&
+                    <Nav.Link onClick={login}>
+                        Login
+                        <FontAwesomeIcon className="ml-1" icon={faSignInAlt} />
+                    </Nav.Link>
+                    }
+                </Nav>
+            </Navbar.Collapse>
+        </Navbar>
+    );
 }

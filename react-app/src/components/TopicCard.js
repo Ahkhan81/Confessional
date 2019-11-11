@@ -1,5 +1,5 @@
 import React from 'react';
-import { Accordion, Col, Button, Card, Row, useAccordionToggle } from 'react-bootstrap';
+import { Accordion, Button, Card, Row, useAccordionToggle } from 'react-bootstrap';
 import { useHistory } from "react-router-dom";
 
 const CardHeaderToggle = ({children, eventKey, callback}) => {
@@ -16,7 +16,7 @@ const CardHeaderToggle = ({children, eventKey, callback}) => {
 
 export const TopicCard = (props) => {
     let history = useHistory();
-    const { expanded, url } = props;
+    const { expanded } = props;
 
     function navigate() {
         history.push(props.url);
@@ -30,7 +30,7 @@ export const TopicCard = (props) => {
                 <CardHeaderToggle eventKey={0}>
                     <Row className="px-2">
                         <h6 className="align-self-center mb-1 mr-auto">{props.name}</h6>
-                        <Button size="sm" variant="primary" onClick={navigate}>View All</Button>
+                        <Button size="sm" variant="dark" onClick={navigate}>View All</Button>
                     </Row>
                 </CardHeaderToggle>
                 <Accordion.Collapse eventKey={0}>

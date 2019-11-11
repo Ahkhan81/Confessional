@@ -151,7 +151,7 @@ const ThreadPreviewCard = (props) => {
             <Card.Footer>
                 <Row className="px-2">
                     <small className="text-muted align-self-center mb-1 mr-auto">Last activity {lastActivity}</small>
-                    <Button variant="primary" size="sm" onClick={navigate}>View</Button>
+                    <Button variant="dark" size="sm" onClick={navigate}>View</Button>
                 </Row>
             </Card.Footer>
         </Card>
