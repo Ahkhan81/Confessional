@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { sendGet } from '../util/api';
 import { ContentView } from '../components/ContentView';
 import { TopicCard } from '../components/TopicCard';
 
@@ -7,40 +8,24 @@ export class Home extends React.Component {
     constructor() {
         super();
         this.state = {
-            expandDefault: ["Events"]
+            expandDefault: ["Events"],
+            topics: []
         };
-    }
 
-    componentWillMount() {
-        //TODO: Get main topics from backend
-        let topics = [
-            {
-                name: "Administration",
-                url: "/Topic/Administration"
-            },
-            {
-                name: "Events",
-                url: "/Topic/Events"
-            },
-            {
-                name: "Clubs",
-                url: "/Topic/Clubs"
-            },
-            {
-                name: "Sports",
-                url: "/Topic/Sports"
-            },
-            {
-                name: "SGA",
-                url: "/Topic/SGA"
-            },
-            {
-                name: "Majors",
-                url: "/Topic/Majors"
-            }
-        ];
-        this.setState({
-            topics
+        // Get Main Topics.
+        sendGet('GetMainTopics', null,
+        () => {
+            // onSent
+        },
+        (error) => {
+            // onError
+            console.log(error);
+        },
+        (response) => {
+            // onSuccess
+            this.setState({
+                topics: response.topics
+            });
         });
     }
 
@@ -48,14 +33,14 @@ export class Home extends React.Component {
         const { expandDefault, topics } = this.state;
         
         const content = topics.map((topic) => {
-            const { name, url } = topic;
+            const { id, name } = topic;
             const isExpanded = expandDefault.includes(name);
 
             return (
                 <TopicCard
-                    key={name} 
+                    key={id} 
                     name={name} 
-                    url={url}
+                    url={`/Topic/${id}`}
                     expanded={isExpanded}
                 />
             );

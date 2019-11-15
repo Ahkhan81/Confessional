@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Button, FormControl, Image, InputGroup, Modal, Nav, NavDropdown, Navbar } from 'react-bootstrap';
+import { Button, FormControl, Image, InputGroup, Nav, NavDropdown, Navbar } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignInAlt, faSearch } from '@fortawesome/free-solid-svg-icons';

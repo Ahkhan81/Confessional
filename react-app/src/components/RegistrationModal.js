@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { Alert, Button, Col, Form, Modal } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClipboard, faSignInAlt, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faClipboard, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { useStore } from "../store/useStore";
 
 export const RegistrationModal = () => {
