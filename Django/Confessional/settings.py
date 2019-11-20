@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
 	'127.0.0.1',
-	'422906d5.ngrok.io',
+	'*',
 ]
 
 # Application definition
@@ -80,9 +80,11 @@ WSGI_APPLICATION = 'Confessional.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'OPTIONS': {
-            'read_default_file': '/etc/mysql/my.cnf',
-        },
+        'NAME' : 'confess',
+        'USER' : 'root',
+        'PASSWORD' : 'toor',
+        'HOST' : 'localhost',
+        'PORT' : '3306'
     }
 }
 

@@ -141,6 +141,7 @@ class Actions(models.Model):
 
 
 class Admin(models.Model):
+   admin_id = models.AutoField(db_column = "admin_id", primary_key=True)
    email = models.CharField(max_length=40)
    fname = models.CharField(max_length=50)
    lname = models.CharField(max_length=50)
@@ -155,7 +156,7 @@ class Admin(models.Model):
        db_table = 'admin_user'
 
 class User(models.Model):
-    
+
    FACULTY = 'Faculty'
    STAFF = 'Staff'
    STUDENT = 'Student'
@@ -165,7 +166,7 @@ class User(models.Model):
        (STAFF, ('Staff')),
        (STUDENT, ('Student')),
    ]
-
+   user_id = models.AutoField(db_column = "user_id", primary_key=True)
    username = models.CharField(max_length=30)
    fname = models.CharField(max_length=50)
    lname = models.CharField(max_length=50)
@@ -180,9 +181,7 @@ class AdminActions(models.Model):
    action_type = models.ForeignKey(
        Actions, on_delete=models.CASCADE
    )
-   admin_id = models.ForeignKey(
-       Admin, on_delete=models.CASCADE
-   )
+   admin_id = Admin.pk
    action_time = models.DateTimeField(auto_now=True)
    service_id = models.IntegerField
 
@@ -191,21 +190,18 @@ class AdminActions(models.Model):
        db_table = 'admin_action'
 
 class Categories(models.Model):
+   category_id = models.AutoField(db_column = "category_id", primary_key=True)
    category_name = models.CharField(max_length=40)
-   admin_id = models.ForeignKey(
-       Admin, on_delete=models.CASCADE
-   )
+   admin_id = Admin.pk
 
    class Meta:
        managed = False
        db_table = 'categories'
 
 class Hashes(models.Model):
-   user_id = models.ForeignKey(
-       User, on_delete=models.CASCADE
-   )
+   user_id = User.pk
    username = models.CharField(max_length=30)
-   hashval = models.CharField(max_length=128)
+   hashval = models.CharField(max_length=128, primary_key=True)
 
    class Meta:
        managed = False
@@ -213,34 +209,28 @@ class Hashes(models.Model):
 
 class Message(models.Model):
    msg_id = models.CharField(max_length=64)
-   user_id = models.ForeignKey(
-       User, on_delete=models.CASCADE
-   )
+   user_id = User.pk
    msg_time = models.DateTimeField(auto_now=True)
    msg_text = models.TextField
-   category_id = models.ForeignKey(
-       Categories, on_delete=models.CASCADE
-   )
+   category_id = Categories.pk
    msg_thread = models.IntegerField
    class Meta:
        managed = False
        db_table = 'message'
 
 class Usergroup(models.Model):
+   group_id = models.AutoField(db_column = "group_id", primary_key=True)
    group_num = models.IntegerField
-   category_id = models.ForeignKey(
-       Categories, on_delete=models.CASCADE
-   )
+   category_id = Categories.pk
    category_name = models.CharField(max_length=40)
    user_name = models.CharField(max_length=30)
-   user_id = models.ForeignKey(
-       User, on_delete=models.CASCADE
-   )
+   user_id = User.pk
    class Meta:
        managed = False
        db_table = 'usergroup'
 
 class User_logins(models.Model):
+   login_id = models.AutoField(db_column = "login_id", primary_key=True)
    timestamp = models.DateTimeField(auto_now=True)
 
    class Meta:
