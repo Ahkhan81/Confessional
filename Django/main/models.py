@@ -208,7 +208,7 @@ class Hashes(models.Model):
        db_table = 'hashes'
 
 class Message(models.Model):
-   msg_id = models.CharField(max_length=64)
+   msg_id = models.CharField(max_length=64, primary_key=True)
    user_id = User.pk
    msg_time = models.DateTimeField(auto_now=True)
    msg_text = models.TextField
