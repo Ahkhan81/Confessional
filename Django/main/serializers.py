@@ -13,12 +13,12 @@ class AdminSerializer(serializers.ModelSerializer):
 class ActionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Actions
-        fields = ('id', 'action_type')
+        fields = ('action_num', 'action_type')
 
 class AdminActionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdminActions
-        fields = ('id', 'action_type', 'admin_id', 'action_time', 'service_id')
+        fields = ('action_num', 'action_type', 'admin_id', 'action_time')
 
 class CategoriesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -28,7 +28,7 @@ class CategoriesSerializer(serializers.ModelSerializer):
 class HashesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hashes
-        fields = ('id', 'user_id', 'username', 'hashval')
+        fields = ('user_id', 'username', 'hashval')
 
 class MessageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -43,7 +43,7 @@ class UsergroupSerializer(serializers.ModelSerializer):
 class UserLoginSerializer(serializers.ModelSerializer):
     class Meta:
         model = User_logins
-        fields = ('login_id', 'timestamp')
+        fields = ('login_id', 'time_in', 'time_out')
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

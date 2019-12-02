@@ -134,7 +134,7 @@ class Actions(models.Model):
        (UPDATE_MEMBER, ('Update a member')),
    ]
    action_type = models.CharField(max_length=50, choices=ADMIN_ACTION_TYPES)
-
+   action_num =  models.AutoField(db_column = "action_num", primary_key=True)
    class Meta:
        managed = False
        db_table = 'action'
@@ -145,7 +145,7 @@ class Admin(models.Model):
    email = models.CharField(max_length=40)
    fname = models.CharField(max_length=50)
    lname = models.CharField(max_length=50)
-   phone = models.CharField(max_length=10)
+   phone = models.CharField(max_length=10, db_column = "phone_number")
    pwd = models.CharField(max_length=12)
 
    def __str__(self):
@@ -181,9 +181,9 @@ class AdminActions(models.Model):
    action_type = models.ForeignKey(
        Actions, on_delete=models.CASCADE
    )
+   action_num = models.AutoField(db_column = "action_num", primary_key=True)
    admin_id = Admin.pk
    action_time = models.DateTimeField(auto_now=True)
-   service_id = models.IntegerField
 
    class Meta:
        managed = False
@@ -208,12 +208,12 @@ class Hashes(models.Model):
        db_table = 'hashes'
 
 class Message(models.Model):
-   msg_id = models.CharField(max_length=64)
+   msg_id = models.CharField(max_length=64, primary_key=True)
    user_id = User.pk
    msg_time = models.DateTimeField(auto_now=True)
-   msg_text = models.TextField
+   msg_text = models.TextField()
    category_id = Categories.pk
-   msg_thread = models.IntegerField
+   msg_thread = models.IntegerField()
    class Meta:
        managed = False
        db_table = 'message'
@@ -231,7 +231,8 @@ class Usergroup(models.Model):
 
 class User_logins(models.Model):
    login_id = models.AutoField(db_column = "login_id", primary_key=True)
-   timestamp = models.DateTimeField(auto_now=True)
+   time_in = models.DateTimeField(auto_now=True)
+   time_out = models.DateTimeField(auto_now=True)
 
    class Meta:
        managed = False
