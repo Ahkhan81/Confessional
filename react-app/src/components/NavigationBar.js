@@ -3,6 +3,7 @@ import { Button, FormControl, Image, InputGroup, Nav, NavDropdown, Navbar } from
 import { LinkContainer } from 'react-router-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignInAlt, faSearch } from '@fortawesome/free-solid-svg-icons';
+import GoogleLogin from 'react-google-login';
 import { useStore } from "../store/useStore";
 
 export const NavigationBar = () => {
@@ -26,6 +27,10 @@ export const NavigationBar = () => {
     function logout() {
         dispatch({ type: "USER_LOGOUT" });
     }
+
+    const responseGoogle = (response) => {
+        console.log(response);
+    }
     
     return (
         <Navbar bg="light" expand="lg" fixed="top" className="border-bottom">
@@ -46,23 +51,34 @@ export const NavigationBar = () => {
                     </InputGroup>
                 </Nav>
                 <Nav className="ml-auto">
-                    {/* Right side of  side of Navbar */}
-                    {user.loggedIn && 
-                    <NavDropdown title={userInfoContent} className="nav-user-info">
-                        Signed in as <strong>{user.fullName}</strong>
-                        <NavDropdown.Item>
-                            <Button variant="danger" onClick={logout}>Logout</Button>
-                        </NavDropdown.Item>
-                    </NavDropdown>
-                    }
-                    {!user.loggedIn &&
-                    <Nav.Link onClick={login}>
-                        Login
-                        <FontAwesomeIcon className="ml-1" icon={faSignInAlt} />
-                    </Nav.Link>
-                    }
+                    <GoogleLogin
+                        clientId="36893320136-ssp84asi1l6aif9j279tpmuo98dk1ora.apps.googleusercontent.com"
+                        buttonText="Sign in with Google"
+                        onSuccess={responseGoogle}
+                        onFailure={responseGoogle}
+                        cookiePolicy={'single_host_origin'}
+                    />
+                    {/* removed code */}
+                    
                 </Nav>
             </Navbar.Collapse>
         </Navbar>
     );
 }
+
+// removed code
+// {/* Right side of  side of Navbar */}
+// {user.loggedIn && 
+//     <NavDropdown title={userInfoContent} className="nav-user-info">
+//         Signed in as <strong>{user.fullName}</strong>
+//         <NavDropdown.Item>
+//             <Button variant="danger" onClick={logout}>Logout</Button>
+//         </NavDropdown.Item>
+//     </NavDropdown>
+//     }
+//     {!user.loggedIn &&
+//     <Nav.Link onClick={login}>
+//         Login
+//         <FontAwesomeIcon className="ml-1" icon={faSignInAlt} />
+//     </Nav.Link>
+//     }
