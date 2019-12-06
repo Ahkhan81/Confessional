@@ -135,6 +135,11 @@ class Actions(models.Model):
    ]
    action_type = models.CharField(max_length=50, choices=ADMIN_ACTION_TYPES)
    action_num =  models.AutoField(db_column = "action_num", primary_key=True)
+
+   def __str__(self):
+       return '{}'.format(self.action_type)
+
+
    class Meta:
        managed = False
        db_table = 'action'
@@ -179,7 +184,7 @@ class User(models.Model):
 
 class AdminActions(models.Model):
    action_type = models.ForeignKey(
-       Actions, on_delete=models.CASCADE
+       Actions, db_column="action_type", on_delete=models.CASCADE
    )
    action_num = models.AutoField(db_column = "action_num", primary_key=True)
    admin_id = Admin.pk
