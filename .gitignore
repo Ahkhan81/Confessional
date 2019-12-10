@@ -1,5 +1,7 @@
 # Pulled From https://djangowaves.com/tips-tricks/gitignore-for-a-django-project/ #
 
+./Django/Confessional/settings.py
+
 # Django #
 *.log
 *.pot
