@@ -12,22 +12,6 @@ import json
 
 PUBLIC_CERT = "-----BEGIN CERTIFICATE-----\nMIIDJjCCAg6gAwIBAgIIBDtSam35pB4wDQYJKoZIhvcNAQEFBQAwNjE0MDIGA1UE\nAxMrZmVkZXJhdGVkLXNpZ25vbi5zeXN0ZW0uZ3NlcnZpY2VhY2NvdW50LmNvbTAe\nFw0xOTExMzAwNDI5MjhaFw0xOTEyMTYxNjQ0MjhaMDYxNDAyBgNVBAMTK2ZlZGVy\nYXRlZC1zaWdub24uc3lzdGVtLmdzZXJ2aWNlYWNjb3VudC5jb20wggEiMA0GCSqG\nSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDsDdy+kN5VyQg5u+3D/1D/wX+JbV+0FHiV\neGS5He45LgrYoGd42NB0A0W2HM1rYY4r8tUHjK3cPrhHNH2JERS9dkw3NkaMUdqG\nTeZTXtSsB8/uvae+hOVXLBMB1lMOfW+WOavmTsXsKN1jMcfK/3KfO7/hv56ZQ2/j\nwFjC3wxcpuL6UYizEQ6CswETQEacpoUwbjHE+0MRfCDtOlWHFLLlM2MO5jv78U/I\nyPCWZmDdvF5BBCDiVZC5IhHj0Fh73f98pgGdebGbtAfvYqxY4mODbdMeQETuCRN6\n4kB2rKu93PdzTxCSyVlqkLWl3FtIg8FsNPCKVA5e2NXucVOne9fPAgMBAAGjODA2\nMAwGA1UdEwEB/wQCMAAwDgYDVR0PAQH/BAQDAgeAMBYGA1UdJQEB/wQMMAoGCCsG\nAQUFBwMCMA0GCSqGSIb3DQEBBQUAA4IBAQCvQSFW8kGeoTHplwM0inZr0E7eXHH0\nHjclDodvhZJT+8FZ9wICmly39gHNrmzCI8BhVqQA8FIqis2j14MromxYYV+pgHyq\nMhZ58ugk9X32b54lqNOqBNN+RZv9wvaeTgV2ANtqo5edPKcm8FA9LwI27WZqhNMI\nlmC1hn5wJzRhtyaIqWhdp5HGFrBXj0vbdz9vKtGxum4kFMBYeXsLnOZIdylSmbIx\nEaOLAncq+/I7Gxi39BN5hdA+2oOFynXUpWx9kRSaqwGFPAWeGWczauPUWmI7zoAO\nWl0+e9RVTAIq4EERHK66pjZXxdmxoknYMJk8u5qUCwzZtyobCVlgZOJ0\n-----END CERTIFICATE-----\n"
 
-class CustomPagination(PageNumberPagination):
-    page_size = 3
-    page_size_query_param = 'page_size'
-    max_page_size = 1000
-
-    def get_paginated_response(self, data):
-        return Response({
-            'links': {
-                'next': self.get_next_link(),
-                'previous': self.get.previous.link(),
-            },
-            'count': self.page.paginator.count,
-            'page_size': self.page_size,
-            'results': data
-        })
-
 class AdminView(viewsets.ModelViewSet):
     queryset = Admin.objects.all()
     serializer_class = AdminSerializer
