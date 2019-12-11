@@ -9,11 +9,11 @@ export class Home extends React.Component {
         super();
         this.state = {
             expandDefault: ["Events"],
-            topics: []
+            categories: []
         };
 
         // Get Main Topics.
-        sendGet('GetMainTopics', null,
+        sendGet('categories', null,
         () => {
             // onSent
         },
@@ -24,23 +24,24 @@ export class Home extends React.Component {
         (response) => {
             // onSuccess
             this.setState({
-                topics: response.topics
+                // topics: response.topics
+                categories: response.map((category) => ({id: category.category_id, name: category.category_name}))
             });
         });
     }
 
     render() {
-        const { expandDefault, topics } = this.state;
+        const { expandDefault, categories } = this.state;
         
-        const content = topics.map((topic) => {
-            const { id, name } = topic;
+        const content = categories.map((category) => {
+            const { id, name } = category; // django model
             const isExpanded = expandDefault.includes(name);
 
             return (
                 <TopicCard
                     key={id} 
                     name={name} 
-                    url={`/Topic/${id}`}
+                    url={`/Category/${id}`}
                     expanded={isExpanded}
                 />
             );

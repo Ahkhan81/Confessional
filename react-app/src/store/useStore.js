@@ -5,12 +5,10 @@
 import React, { createContext, useReducer, useContext } from "react";
 import PropTypes from "prop-types";
 
-import { authenticationInitialState, authenticationActions } from "./authentication";
 import { userInitialState, userActions } from "./user";
 import { registrationInitialState, registrationActions } from "./registration";
 
 const initialState = {
-    ...authenticationInitialState,
     ...registrationInitialState,
     ...userInitialState
 };
@@ -18,7 +16,6 @@ const initialState = {
 const StoreContext = createContext(initialState);
 
 const Actions = {
-    ...authenticationActions,
     ...registrationActions,
     ...userActions
 };

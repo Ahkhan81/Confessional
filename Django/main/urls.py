@@ -14,5 +14,6 @@ router.register('userlogins', views.UserLoginView)
 router.register('users', views.UserView)
 
 urlpatterns = [
-    path('api/', include(router.urls))    
+    path('api/', include(router.urls)),
+    path('api/admins/<int:admin_id>', views.admin_specific)
 ]
