@@ -38,7 +38,7 @@ class MessageSerializer(serializers.ModelSerializer):
 class UsergroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Usergroup
-        fields = ('group_id', 'group_num', 'category_id', 'category_name', 'user_name', 'user_id')
+        fields = ('group_id', 'group_num', 'category_id', 'category_name', 'username', 'user_id')
 
 class UserLoginSerializer(serializers.ModelSerializer):
     class Meta:
