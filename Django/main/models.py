@@ -232,7 +232,7 @@ class Message(models.Model):
 
 class Usergroup(models.Model):
    group_id = models.AutoField(db_column = "group_id", primary_key=True)
-   group_num = models.IntegerField
+   group_num = models.IntegerField()
    category_id = models.ForeignKey(Categories, db_column = 'category_id', on_delete=models.CASCADE)
    category_name = models.CharField(max_length=40)
    username = models.CharField(db_column = "user_name", max_length=30)
