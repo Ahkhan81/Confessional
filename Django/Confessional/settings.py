@@ -84,9 +84,11 @@ WSGI_APPLICATION = 'Confessional.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'OPTIONS': {
-            'read_default_file': '/etc/mysql/my.cnf',
-        },
+        'NAME' : 'confess',
+        'USER' : 'root',
+        'PASSWORD' : 'toor',
+        'HOST' : 'localhost',
+        'PORT' : '3306'
     }
 }
 

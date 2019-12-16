@@ -33,12 +33,12 @@ class HashesSerializer(serializers.ModelSerializer):
 class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
-        fields = ('msg_id', 'user_id', 'msg_time', 'msg_text', 'category_id' , 'msg_thread')
+        fields = ('msg_id', 'user_id', 'msg_time', 'msg_text', 'category_id' , 'msg_thread', 'thread_title')
 
 class UsergroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Usergroup
-        fields = ('group_id', 'group_num', 'category_id', 'category_name', 'user_name', 'user_id')
+        fields = ('group_id', 'group_num', 'category_id', 'category_name', 'username', 'user_id')
 
 class UserLoginSerializer(serializers.ModelSerializer):
     class Meta:

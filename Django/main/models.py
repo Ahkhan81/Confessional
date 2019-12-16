@@ -193,7 +193,7 @@ class AdminActions(models.Model):
        Actions, db_column="action_type", on_delete=models.CASCADE
    )
    action_num = models.AutoField(db_column = "action_num", primary_key=True)
-   admin_id = Admin.pk
+   admin_id = models.ForeignKey(Admin, db_column = 'admin_id', on_delete=models.CASCADE)
    action_time = models.DateTimeField(auto_now=True)
 
    class Meta:
@@ -203,14 +203,14 @@ class AdminActions(models.Model):
 class Categories(models.Model):
    category_id = models.AutoField(db_column = "category_id", primary_key=True)
    category_name = models.CharField(max_length=40)
-   admin_id = Admin.pk
+   admin_id = models.ForeignKey(Admin, db_column = 'admin_id', on_delete=models.CASCADE)
 
    class Meta:
        managed = False
        db_table = 'categories'
 
 class Hashes(models.Model):
-   user_id = User.pk
+   user_id = models.ForeignKey(User, db_column = 'user_id', on_delete=models.CASCADE)
    username = models.CharField(max_length=30)
    hashval = models.CharField(max_length=128, primary_key=True)
 
@@ -220,22 +220,23 @@ class Hashes(models.Model):
 
 class Message(models.Model):
    msg_id = models.CharField(max_length=64, primary_key=True)
-   user_id = User.pk
+   user_id = models.ForeignKey(User, db_column = 'user_id', on_delete=models.CASCADE)
    msg_time = models.DateTimeField(auto_now=True)
    msg_text = models.TextField()
-   category_id = Categories.pk
+   category_id = models.ForeignKey(Categories, db_column = 'category_id', on_delete=models.CASCADE)
    msg_thread = models.IntegerField()
+   thread_title = models.CharField(max_length=50)
    class Meta:
        managed = False
        db_table = 'message'
 
 class Usergroup(models.Model):
    group_id = models.AutoField(db_column = "group_id", primary_key=True)
-   group_num = models.IntegerField
-   category_id = Categories.pk
+   group_num = models.IntegerField()
+   category_id = models.ForeignKey(Categories, db_column = 'category_id', on_delete=models.CASCADE)
    category_name = models.CharField(max_length=40)
-   user_name = models.CharField(max_length=30)
-   user_id = User.pk
+   username = models.CharField(db_column = "user_name", max_length=30)
+   user_id = models.ForeignKey(User, db_column = 'user_id', on_delete=models.CASCADE)
    class Meta:
        managed = False
        db_table = 'usergroup'
