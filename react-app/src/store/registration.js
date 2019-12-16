@@ -1,12 +1,13 @@
+import * as jwt_decode from 'jwt-decode';
+
 export const registrationInitialState = {
     registration: {
         showModal: false,
+
+        token: null,
         emailAddress: "",
-        password: "",
-        confirmPassword: "",
-        firstName: "",
-        lastName: "",
         displayName: "",
+
         pending: false,
         error: "",
         success: false
@@ -15,10 +16,15 @@ export const registrationInitialState = {
 
 export const registrationActions = {
     REGIST_SHOW_MODAL: (state, action) => {
+        const token = action.token;
+        const decoded = jwt_decode(token);
+        
         return {
             registration: {
                 ...state.registration,
-                showModal: action.show
+                showModal: action.show,
+                token,
+                emailAddress: decoded.email
             }
         };
     },
@@ -29,20 +35,10 @@ export const registrationActions = {
     },
     REGIST_UPDATE_VALUE: (state, action) => {
         const { registration } = state;
-        const emailAddress = "emailAddress" in action ? action.emailAddress : registration.emailAddress;
-        const password = "password" in action ? action.password : registration.password;
-        const confirmPassword = "confirmPassword" in action ? action.confirmPassword : registration.confirmPassword;
-        const firstName = "firstName" in action ? action.firstName : registration.firstName;
-        const lastName = "lastName" in action ? action.lastName : registration.lastName;
         const displayName = "displayName" in action ? action.displayName : registration.displayName;
         return {
             registration: {
                 ...registration,
-                emailAddress,
-                password,
-                confirmPassword,
-                firstName,
-                lastName,
                 displayName
             }
         };
@@ -72,9 +68,10 @@ export const registrationActions = {
         return {
             registration: {
                 ...registration,
+                displayName: "",
                 pending: false,
                 error: "",
-                success: action.success
+                success: true
             }
         };
     }

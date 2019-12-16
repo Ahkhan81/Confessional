@@ -3,10 +3,6 @@ import { LinkContainer } from 'react-router-bootstrap';
 import { Breadcrumb } from 'react-bootstrap';
 
 export class ContentView extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         const { headerName, breadCrumbName, paths, component } = this.props;
 

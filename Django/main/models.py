@@ -181,6 +181,12 @@ class User(models.Model):
    class Meta:
        managed = False
        db_table = 'users'
+   
+   @classmethod
+   def create(cls, email, displayName):
+        user = cls(user_email = email, username = displayName, user_type = 'Student')
+        user.save()
+        return user
 
 class AdminActions(models.Model):
    action_type = models.ForeignKey(

@@ -4,10 +4,7 @@ import { useStore } from '../store/useStore';
 
 import { Favorites } from './Favorites';
 import { NavigationBar } from './NavigationBar';
-import { AuthenticationModal } from './AuthenticationModal';
-import { LogoutModal } from './LogoutModal';
 import { RegistrationModal } from './RegistrationModal';
-import { RegistrationCompleteModal } from './RegistrationCompleteModal';
 
 export const Layout = (props) => {
     const {
@@ -18,10 +15,7 @@ export const Layout = (props) => {
     
     return (
         <React.Fragment>
-            <AuthenticationModal />
-            <LogoutModal />
             <RegistrationModal />
-            <RegistrationCompleteModal />
             
             <NavigationBar />
             <Container fluid className="content-container">

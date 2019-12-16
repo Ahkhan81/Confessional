@@ -67,6 +67,19 @@
     border: 1px solid rgba(0,0,0,.125) !important;
 }
 
+.comment:not(:nth-last-child(2)) {
+    margin-bottom: 1rem!important;
+}
+
+.comment hr {
+    margin-top: 0px;
+}
+
+hr.full {
+    margin-left: -15px !important;
+    margin-right: -15px !important;
+}
+
 .red {
     color: #ad0000;
 }

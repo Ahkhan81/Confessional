@@ -1,11 +1,14 @@
-import React, { useCallback } from 'react';
-import { Button, FormControl, Image, InputGroup, Modal, Nav, NavDropdown, Navbar } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Button, FormControl, Image, InputGroup, Nav, NavDropdown, Navbar } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSignInAlt, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { GoogleLogin, GoogleLogout } from 'react-google-login';
 import { useStore } from "../store/useStore";
+import { sendGet } from '../util/api';
 
 export const NavigationBar = () => {
+    
     const {
         state: {
             user
@@ -13,18 +16,92 @@ export const NavigationBar = () => {
         dispatch
     } = useStore();
 
-    user.fullName = `${user.firstName} ${user.lastName}`;
-        
-    const userInfoContent = (
-        <>
-            <Image className="pr-2" src={user.profileImage} roundedCircle />
-            <strong>{user.fullName}</strong>
-        </>
-    );
+    const { showLoggedIn } = user;
 
-    const login = useCallback(() => dispatch({ type: "AUTH_SHOW_MODAL", show: true }), [dispatch]);
-    function logout() {
-        dispatch({ type: "USER_LOGOUT" });
+    const [disableLogin, setDisableLogin] = useState(user.isLoggedIn);
+
+    const onLoginSuccess = (response) => {
+        const token = response.Zi.id_token;
+
+        sendGet(
+            `users/validate`,
+            { token },
+            null,
+            (response) => {
+                setDisableLogin(false);
+                alert("Failed to log in.");
+            },
+            (response) => {
+                setDisableLogin(false);
+                if (response.exists) {
+                    const { administrator, displayName, type } = response.user;
+                    const data = {
+                        user: {
+                            token,
+                            displayName,
+                            administrator,
+                            type
+                        }
+                    };
+                    dispatch({ type: "USER_LOG_IN", ...data });
+                } else {
+                    if (response.message === "EMAIL_DISALLOWED") {
+                        alert("Only @smcm.edu emails are allowed.");
+                    } else if (response.message === "NOT_REGISTERED") {
+                        dispatch({ type: "REGIST_SHOW_MODAL", show: true, token })
+                    }
+                }
+            }
+        );
+    };
+
+    const onLoginFailure = (response) => {
+        // setShowLoggedIn(false);
+    };
+
+    const onLogoutSuccess = () => {
+        // setShowLoggedIn(false);
+        dispatch({ type: "USER_LOG_OUT" });
+    };
+
+    let accountInfo;
+    if (!showLoggedIn) {
+        accountInfo = (
+            <GoogleLogin
+                clientId="36893320136-ssp84asi1l6aif9j279tpmuo98dk1ora.apps.googleusercontent.com"
+                buttonText="Sign in with Google"
+                onSuccess={onLoginSuccess}
+                onFailure={onLoginFailure}
+                cookiePolicy={'single_host_origin'}
+                isSignedIn={user.isLoggedIn}
+                disabled={disableLogin}
+            />
+        );
+    } else {
+        const userInfoContent = (
+            <>
+                <Image
+                    className="pr-2" 
+                    src={user.picture} 
+                    style={{width: "100%"}, {maxWidth: '50px'}}
+                    roundedCircle />
+                <strong>{user.name} ({user.displayName})</strong>
+            </>
+        );
+
+        accountInfo = (
+            <NavDropdown title={userInfoContent} className="nav-user-info">
+                Signed in as <strong>{user.name}</strong>
+                <NavDropdown.Item>
+                    <GoogleLogout
+                        clientId="36893320136-ssp84asi1l6aif9j279tpmuo98dk1ora.apps.googleusercontent.com"
+                        buttonText="Logout"
+                        onLogoutSuccess={onLogoutSuccess}
+                        isSignedIn={user.isSignedIn}
+                    />
+                </NavDropdown.Item>
+            </NavDropdown>
+        );
     }
     
     return (
@@ -47,22 +124,26 @@ export const NavigationBar = () => {
                 </Nav>
                 <Nav className="ml-auto">
                     {/* Right side of  side of Navbar */}
-                    {user.loggedIn && 
-                    <NavDropdown title={userInfoContent} className="nav-user-info">
-                        Signed in as <strong>{user.fullName}</strong>
-                        <NavDropdown.Item>
-                            <Button variant="danger" onClick={logout}>Logout</Button>
-                        </NavDropdown.Item>
-                    </NavDropdown>
-                    }
-                    {!user.loggedIn &&
-                    <Nav.Link onClick={login}>
-                        Login
-                        <FontAwesomeIcon className="ml-1" icon={faSignInAlt} />
-                    </Nav.Link>
-                    }
+                    {accountInfo}
                 </Nav>
             </Navbar.Collapse>
         </Navbar>
     );
 }
+
+// removed code
+// {/* Right side of  side of Navbar */}
+// {user.loggedIn && 
+//     <NavDropdown title={userInfoContent} className="nav-user-info">
+//         Signed in as <strong>{user.fullName}</strong>
+//         <NavDropdown.Item>
+//             <Button variant="danger" onClick={logout}>Logout</Button>
+//         </NavDropdown.Item>
+//     </NavDropdown>
+//     }
+//     {!user.loggedIn &&
+//     <Nav.Link onClick={login}>
+//         Login
+//         <FontAwesomeIcon className="ml-1" icon={faSignInAlt} />
+//     </Nav.Link>
+//     }

@@ -1,139 +1,315 @@
-import React from 'react';
-import { Button, Col, Container, Form, Image, InputGroup, Row, Pagination } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Button, Col, Container, Form, Image, InputGroup, Modal, Row } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment, faFlag } from '@fortawesome/free-solid-svg-icons';
+
+import { sendGet, sendPost, sendDelete } from '../util/api';
 import { ContentView } from '../components/ContentView';
+import { Paging } from '../components/Paging';
+import { useStore } from "../store/useStore";
 
 import profileImage from '../images/3xBmozg.jpg';
 
-export class Thread extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            paths: [
-                {
-                    name: "Home",
-                    url: "/"
-                },
-                {
-                    name: "Events",
-                    url: "/Topic/Events"
-                }
-            ],
-            comment: {
-                text: "",
-                comments: []
-            }
-        };
-    }
+export const Thread = (props) => {
+    const { state: { user } } = useStore();
 
-    componentDidMount() {
-        const { id } = this.props.match.params;
-    }
+    const [breadCrumbs, setBreadCrumbs] = useState([
+        {
+            name: "Home",
+            url: "/"
+        }
+    ]);
 
-    addComment = () => {
-        const text = this.state.comment.text.trim();
-        console.log("Add Comment Text: " + text);
+    const [thread, setThread] = useState({
+        id: props.match.params.id,
+        title: "",
+        body: null,
+        timePosted: null,
+        user: {
+            id: null,
+            displayName: null
+        }
+    });
+
+    const [messageResults, setMessageResults] = useState({
+        settings: {
+            page: 0,
+            itemsPerPage: 8
+        },
+        items: [],
+        totalItems: 0,
+        totalResultItems: 0
+    });
+
+    const [messageRefresh, setMessageRefresh] = useState({
+        execute: false,
+        waiting: false
+    });
+
+    const refreshMessages = () => {
+        if (messageRefresh.execute && !messageRefresh.waiting) {
+            getMessages();
+        }
+        setTimeout(refreshMessages, 500);
     };
 
-    render() {
-        const { id } = this.props.match.params; 
-        const { paths } = this.state;
-        
-        const content = (
-            <React.Fragment>
-                <Col lg={8} className="px-0">
-                    <h4>{id}</h4>
-                    <p>
-                    Produced by the Department of Theater, Film, and Media Studies and directed by faculty member Amy
-                    Steiger, Shakespeare’s tale of terrors and of unbridled ambition is full of “present fears” and
-                    “horrible imaginings” – witches, ghosts, and deadly violence both actual and imaginary – that
-                    trouble boundaries between the material world and systems or feelings that can less easily be
-                        clutched in the hands. Exploring the remarkable natural and architectural landscape of 
-                        Historic St. Mary’s City, this site-specific Halloween production travels a path from
-                        outdoors in the Town Center to inside the old State House. Along the way, we will draw
-                        on Shakespeare’s roots in medieval theater, on historical connections between colonial 
-                        Maryland and early modern England, and on the power of all kinds of fear, then and now.
-                    </p>
+    refreshMessages();
 
-                    <h5>Comments</h5>
+    // Get Thread info by Thread ID.
+    // This is called on initial component load.
+    useEffect(() => {
+        sendGet(`threads/${thread.id}`,
+            { ...messageResults.settings },
+            () => {
+                // onSent
+                setMessageRefresh(false);
+            },
+            (error) => {
+                // onError
+                console.log(error);
+                setMessageRefresh(false);
+            },
+            (response) => {
+                // onSuccess
+                setMessageRefresh(true);
+                const { category } = response;
 
-                    {
-                        this.props.user && this.props.user.isSignedIn && 
-                        <Form.Group>
-                            <label htmlFor="comment"><h6>Add a Comment</h6></label>
-                            <InputGroup>
-                                <Form.Control 
-                                    id="comment" 
-                                    as="textarea" 
-                                    rows={3} 
-                                    style={{resize: "vertical"}} 
-                                    onChange={(event) => {
-                                        this.setState({
-                                            comment: {
-                                                ...this.state.comment,
-                                                text: event.target.value
-                                            }
-                                        });
-                                    }}
-                                />
-                                <InputGroup.Append>
-                                    <Button 
-                                        variant="secondary"
-                                        disabled={this.state.comment.text.trim().length == 0}
-                                        onClick={() => this.addComment()}
-                                    >
-                                        <FontAwesomeIcon icon={faComment} />
-                                    </Button>
-                                </InputGroup.Append>
-                            </InputGroup>
-                        </Form.Group>
-                    }
+                // Category
+                breadCrumbs.push({name: response.category.name, url: `/Category/${category.id}`});
+                setBreadCrumbs(breadCrumbs);
 
-                    <Comment />
-                    <Row className="mx-0 pt-2">
-                        <Pagination className="mx-auto">
-                            <Pagination.First disabled />
-                            <Pagination.Prev disabled />
-                            <Pagination.Item active>{1}</Pagination.Item>
-                            <Pagination.Next disabled />
-                            <Pagination.Last disabled />
-                        </Pagination>
-                    </Row>
-                </Col>
-            </React.Fragment>
+                // Thread
+                setThread({
+                    id: response.id,
+                    title: response.title,
+                    body: response.body,
+                    timePosted: response.timePosted,
+                    user: response.user
+                });
+                
+                // Messages
+                setMessageResults(response.messageResults);
+            }
         );
+    }, []);
 
-        return (
-            <React.Fragment>
-                <ContentView headerName={`Thread - ${id}`} breadCrumbName={id} paths={paths} component={content} />
-            </React.Fragment>
+    // Get messages when the page changes
+    useEffect(() => {
+        getMessages();
+    }, [messageResults.settings.page]);
+
+    const getMessages = () => {
+        sendGet(
+            `threads/${thread.id}/messages`,
+            {...messageResults.settings},
+            () => {
+                setMessageRefresh(false);
+            },
+            (error) => {
+                setMessageRefresh(false);
+            },
+            (response) => {
+                setMessageRefresh(true);
+                setMessageResults(response);
+            }
         );
     }
+
+    const handlePageChange = (page) => {
+        // React won't recognize state change for objects unless you copy and mutate directly.
+        let newMessageResults = {...messageResults};
+        newMessageResults.settings.page = page;
+        setMessageResults(newMessageResults);
+    }
+
+    const content = (
+        <React.Fragment>
+            <Col className="px-0">
+                <h4>{thread.title}</h4>
+                <p className="mb-0">{thread.body}</p>
+                <small className="text-muted align-self-center my-0">Posted {thread.timePosted} by {thread.user.displayName}</small>
+                <hr />
+                <h5>Messages</h5>
+                <MessageReply 
+                    threadId={thread.id} 
+                    user={user} 
+                    onPostSuccess={getMessages} 
+                />
+                <MessageView 
+                    results={messageResults} 
+                    onPageChange={handlePageChange} 
+                />
+            </Col>
+        </React.Fragment>
+    );
+
+    return (
+        <ContentView
+            headerName={`Thread - ${thread.title}`}
+            breadCrumbName={thread.title}
+            paths={breadCrumbs}
+            component={content}
+        />
+    );
 }
 
-const Comment = (props) => {
+const MessageReply = (props) => {
+    const { threadId, onPostSuccess } = props;
+    const { state: { user } } = useStore();
+
+    const [message, setMessage] = useState("");
+
+    const postMessage = () => {
+        sendPost(
+            `threads/${threadId}/messages/post`,
+            { text: message },
+            () => {
+
+            },
+            (response) => {
+                alert("Fialed to post...");
+            },
+            (response) => {
+                onPostSuccess();
+                setMessage("");
+            },
+            user.token
+        );
+    };
+
+    if (!user.isLoggedIn) {
+        return (<></>);
+    }
+    
     return (
-        <React.Fragment>
+        <Form.Group>
+            <label htmlFor="message"><h6>Add a Message</h6></label>
+            <InputGroup>
+                <Form.Control 
+                    id="message" 
+                    as="textarea" 
+                    rows={3} 
+                    style={{resize: "vertical"}} 
+                    value={message}
+                    onChange={(event) => {
+                        setMessage(event.target.value);
+                    }}
+                />
+                <InputGroup.Append>
+                    <Button 
+                        variant="secondary"
+                        disabled={message.trim().length === 0}
+                        onClick={postMessage}
+                    >
+                        <FontAwesomeIcon icon={faComment} />
+                    </Button>
+                </InputGroup.Append>
+            </InputGroup>
+        </Form.Group>
+    );
+};
+
+const MessageView = (props) => {
+    const messages = props.results.items;
+    const { settings, totalItems } = props.results;
+    const onPageChange = props.onPageChange;
+
+    return (
+        <Container fluid className="px-0">
+            {messages.map((message) => <Message key={message.id} {...message} />)}
+            {messages.length === 0 && <h3 className="mx-auto">No Messages :(</h3>}
+            <Row className="mx-0 pt-2">
+                <Paging
+                    {...settings}
+                    totalItems={totalItems} 
+                    onPageChange={onPageChange}
+                />
+            </Row>
+        </Container>
+    );
+};
+
+const Message = (props) => {
+    const { id, user: author, text, timePosted } = props;
+    const { state: { user } } = useStore();
+    
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    
+    const handleDeleteModalClose = () => {
+        setShowDeleteModal(false);
+    };
+    
+    const handleDeleteClick = () => {
+        console.log(author);
+        sendDelete(
+            `messages/${id}`,
+            null,
+            null,
+            (response) => {
+
+            },
+            (response) => {
+                console.log("successful deletoin");
+                console.log(response);
+                setShowDeleteModal(false);
+                // refresh message view
+            },
+            user.token
+        );
+    };
+
+    const deleteButton = (
+        <FontAwesomeIcon
+            className="ml-1 clickable red" 
+            icon={faFlag} 
+            onClick={() => setShowDeleteModal(true)}
+        />
+    );
+    
+    return (
+        <>
+            <Modal show={showDeleteModal} onHide={handleDeleteModalClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Delete Message</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Are you sure you want to delete this message?
+                    <Col align="center">
+                        <strong>{text}</strong>
+                        <p>Posted by {author.displayName}</p>
+                    </Col>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button size="sm" variant="secondary" onClick={handleDeleteModalClose}>
+                        Close
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant="danger"
+                        onClick={handleDeleteClick}
+                    >
+                        Delete
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+        
             <div className="comment">
                 <Container fluid>
-                    <Col className="px-0 pt-2">
+                    <Col className="px-0 py-2">
                         <Row className="mx-0">
-                            <Image src={profileImage} roundedCircle />
-                            <strong className="pl-2 align-self-center">UserName1</strong>
-                            <FontAwesomeIcon className="ml-auto clickable red" icon={faFlag} />
+                            <Col className="px-0 align-self-center">
+                                <Row className="mx-0 align-middle">
+                                    <strong>{author.displayName}</strong>
+                                    <small className="text-muted">Posted {timePosted}</small>
+                                    {author.administrator && deleteButton}
+                                </Row>
+                            </Col>
                         </Row>
                     </Col>
-                    <p>
-                        Number 15: Burger king foot lettuce. The last thing you'd want in your Burger
-                            King burger is someone's foot fungus. But as it turns out, that might be
-                            what you get. A 4channer uploaded a photo anonymously to the site showcasing
-                            his feet in a plastic bin of lettuce. With the statement: "This is the
-                            lettuce you eat at Burger King." Admittedly, he had shoes on. But that's 
-                            even worse.
-                    </p>
+                    <hr className="full" />
+                    <p>{text}</p>
                 </Container>
             </div>
-        </React.Fragment>
+        </>
     );
 };

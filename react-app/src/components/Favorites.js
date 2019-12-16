@@ -1,5 +1,5 @@
 import React from 'react';
-import { Badge, Container, Nav, Navbar } from 'react-bootstrap';
+import { Badge, Container } from 'react-bootstrap';
 
 export class Favorites extends React.Component {
     constructor() {

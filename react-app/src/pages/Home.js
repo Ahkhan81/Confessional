@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { sendGet } from '../util/api';
 import { ContentView } from '../components/ContentView';
 import { TopicCard } from '../components/TopicCard';
 
@@ -7,55 +8,40 @@ export class Home extends React.Component {
     constructor() {
         super();
         this.state = {
-            expandDefault: ["Events"]
+            expandDefault: ["Events"],
+            categories: []
         };
-    }
 
-    componentWillMount() {
-        //TODO: Get main topics from backend
-        let topics = [
-            {
-                name: "Administration",
-                url: "/Topic/Administration"
-            },
-            {
-                name: "Events",
-                url: "/Topic/Events"
-            },
-            {
-                name: "Clubs",
-                url: "/Topic/Clubs"
-            },
-            {
-                name: "Sports",
-                url: "/Topic/Sports"
-            },
-            {
-                name: "SGA",
-                url: "/Topic/SGA"
-            },
-            {
-                name: "Majors",
-                url: "/Topic/Majors"
-            }
-        ];
-        this.setState({
-            topics
+        // Get Main Topics.
+        sendGet('categories', null,
+        () => {
+            // onSent
+        },
+        (error) => {
+            // onError
+            console.log(error);
+        },
+        (response) => {
+            // onSuccess
+            this.setState({
+                // topics: response.topics
+                categories: response.map((category) => ({id: category.category_id, name: category.category_name}))
+            });
         });
     }
 
     render() {
-        const { expandDefault, topics } = this.state;
+        const { expandDefault, categories } = this.state;
         
-        const content = topics.map((topic) => {
-            const { name, url } = topic;
+        const content = categories.map((category) => {
+            const { id, name } = category; // django model
             const isExpanded = expandDefault.includes(name);
 
             return (
                 <TopicCard
-                    key={name} 
+                    key={id} 
                     name={name} 
-                    url={url}
+                    url={`/Category/${id}`}
                     expanded={isExpanded}
                 />
             );
