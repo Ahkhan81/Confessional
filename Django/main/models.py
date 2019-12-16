@@ -181,6 +181,12 @@ class User(models.Model):
    class Meta:
        managed = False
        db_table = 'users'
+   
+   @classmethod
+   def create(cls, email, displayName):
+        user = cls(user_email = email, username = displayName, user_type = 'Student')
+        user.save()
+        return user
 
 class AdminActions(models.Model):
    action_type = models.ForeignKey(
@@ -219,6 +225,7 @@ class Message(models.Model):
    msg_text = models.TextField()
    category_id = Categories.pk
    msg_thread = models.IntegerField()
+   thread_title = models.CharField(max_length=50)
    class Meta:
        managed = False
        db_table = 'message'

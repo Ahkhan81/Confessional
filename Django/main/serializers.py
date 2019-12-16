@@ -33,7 +33,7 @@ class HashesSerializer(serializers.ModelSerializer):
 class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
-        fields = ('msg_id', 'user_id', 'msg_time', 'msg_text', 'category_id' , 'msg_thread')
+        fields = ('msg_id', 'user_id', 'msg_time', 'msg_text', 'category_id' , 'msg_thread', 'thread_title')
 
 class UsergroupSerializer(serializers.ModelSerializer):
     class Meta:
