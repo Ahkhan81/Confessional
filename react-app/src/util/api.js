@@ -46,10 +46,10 @@ async function send(
             }
         }
 
-        let response = await fetch(uri, options);
         if (onSent !== null) {
             onSent();
         }
+        let response = await fetch(uri, options);
         const json = await response.json();
         if (response.status === 200) {
             onSuccess(json);

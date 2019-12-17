@@ -7,6 +7,7 @@ from .serializers import AdminSerializer, ActionsSerializer, AdminActionsSeriali
 from django.core import serializers
 from google.auth import jwt
 import json
+import datetime
 
 # Create your views here.
 
@@ -34,6 +35,28 @@ class CategoriesView(viewsets.ModelViewSet):
     queryset = Categories.objects.all()
     serializer_class = CategoriesSerializer
     
+    @action(detail=True, methods=['GET'])
+    def threadpreviews(self, request, pk=None):
+        category = Categories.objects.get(category_id = pk)
+        messages = Message.objects.filter(category_id = pk).filter(thread_title__isnull = False)
+        
+        category = {'id': category.category_id, 'name': category.category_name}
+        previews = []
+        
+        for thread in messages:
+            p = {
+                'id': thread.msg_thread,
+                'title': thread.thread_title,
+                'bodySnippet': thread.msg_text,
+                'lastActivity': thread.msg_time
+            }
+            previews.append(p)
+        
+        return Response({
+            'category': category,
+            'threadPreviews': previews
+        })
+    
     
 
 class HashesView(viewsets.ModelViewSet):
@@ -43,7 +66,72 @@ class HashesView(viewsets.ModelViewSet):
 class MessageView(viewsets.ModelViewSet):
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
+    
+    @action(detail=False, methods=['GET'])
+    def thread(self, request):
+        thread_id = request.GET.get('thread_id')
+        thread = Message.objects.filter(msg_thread = thread_id).get(thread_title__isnull = False)
+        messages = Message.objects.filter(msg_thread = thread_id).filter(thread_title = None)
+        
+        convertMessages = []
+        for message in messages:
+            m = {
+                'id': message.msg_id,
+                'user': {
+                    'id': message.user_id.user_id,
+                    'displayName': message.user_id.username
+                },
+                'text': message.msg_text,
+                'timePosted': message.msg_time
+            }
+            convertMessages.append(m)
+        
+        return Response({
+            'thread': {
+                'id': thread.msg_thread,
+                'title': thread.thread_title,
+                'body': thread.msg_text,
+                'timePosted': thread.msg_time,
+                'user': {
+                    'id': thread.user_id.user_id,
+                    'displayName': thread.user_id.username
+                },
+            },
+            'category': {
+                'id': thread.category_id.category_id,
+                'name': thread.category_id.category_name
+            },
+            'messages': convertMessages
+        })
+    
+    @action(detail=False, methods=['POST'])
+    def createmessage(self, request):
+        token = request.META.get('HTTP_AUTHORIZATION')
+        if token == None:
+            return Response({'error': 'Bearer token was not specified'})
+        token = token[7:]
+        claims = jwt.decode(token, verify=False)
+        email = claims['email']
+        user = User.objects.get(user_email = email)
 
+        body = json.loads(request.body)
+        if body == None:
+            return Response({'error': 'create body empty'})
+
+        #msg = Message.create(body['thread_id'], user.user_id, datetime.datetime.now(), body['text'], body['category_id'], 3, body['title'])
+        category = Categories.objects.get(category_id = body['category_id'])
+        msg = Message(msg_id=body['thread_id'], user_id=user, msg_time=datetime.datetime.now(), msg_text=body['text'], category_id=category, msg_thread=3, thread_title=body['title'])
+        msg.save()
+
+        return Response({
+            'msg_id': body['thread_id'],
+            'user_id': user.user_id,
+            'msg_time': datetime.datetime.now(),
+            'msg_text': body['text'],
+            'category_id': body['category_id'],
+            'msg_thread': 3,
+            'thread_title': body['title'],
+        })
 class UsergroupView(viewsets.ModelViewSet):
     queryset = Usergroup.objects.all()
     serializer_class = UsergroupSerializer
@@ -59,7 +147,7 @@ class UserView(viewsets.ModelViewSet):
     @action(detail=False, methods=['GET'])
     def validate(self, request):
         token = request.GET.get('token')
-        claims = jwt.decode(token, certs=PUBLIC_CERT)
+        claims = jwt.decode(token, verify=False)
         email = claims['email']
         if not email.endswith("@smcm.edu"):
             return Response({'exists': False, 'message': 'EMAIL_DISALLOWED'})
@@ -72,7 +160,6 @@ class UserView(viewsets.ModelViewSet):
         if user == None:
             return Response({'exists': False, 'message': 'NOT_REGISTERED'})
 
-        #serializer = UserSerializer(user, many=False)
         convert = {'id': user.user_id, 'displayName': user.username, 'type': user.user_type, 'administrator': False}
         return Response({'exists': True, 'user': convert})
     
@@ -82,7 +169,7 @@ class UserView(viewsets.ModelViewSet):
         if token == None:
             return Response({'error': 'Bearer token was not specified'})
         token = token[7:]
-        claims = jwt.decode(token, verify=False,certs=PUBLIC_CERT)
+        claims = jwt.decode(token, verify=False)
         
         body = json.loads(request.body)
         if body == None or body['displayName'] == None or len(body['displayName'].strip()) == 0:

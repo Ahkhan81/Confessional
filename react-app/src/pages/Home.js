@@ -24,7 +24,6 @@ export class Home extends React.Component {
         (response) => {
             // onSuccess
             this.setState({
-                // topics: response.topics
                 categories: response.map((category) => ({id: category.category_id, name: category.category_name}))
             });
         });
@@ -34,9 +33,9 @@ export class Home extends React.Component {
         const { expandDefault, categories } = this.state;
         
         const content = categories.map((category) => {
-            const { id, name } = category; // django model
+            const { id, name } = category;
             const isExpanded = expandDefault.includes(name);
-
+            
             return (
                 <TopicCard
                     key={id} 

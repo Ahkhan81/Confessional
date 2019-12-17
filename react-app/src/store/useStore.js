@@ -7,8 +7,10 @@ import PropTypes from "prop-types";
 
 import { userInitialState, userActions } from "./user";
 import { registrationInitialState, registrationActions } from "./registration";
+import { favoriteInitialState, favoriteActions } from "./favorite";
 
 const initialState = {
+    ...favoriteInitialState,
     ...registrationInitialState,
     ...userInitialState
 };
@@ -16,6 +18,7 @@ const initialState = {
 const StoreContext = createContext(initialState);
 
 const Actions = {
+    ...favoriteActions,
     ...registrationActions,
     ...userActions
 };
