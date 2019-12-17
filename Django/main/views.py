@@ -7,6 +7,7 @@ from .serializers import AdminSerializer, ActionsSerializer, AdminActionsSeriali
 from django.core import serializers
 from google.auth import jwt
 import json
+import datetime
 
 # Create your views here.
 
@@ -103,8 +104,34 @@ class MessageView(viewsets.ModelViewSet):
             'messages': convertMessages
         })
     
-    
+    @action(detail=False, methods=['POST'])
+    def createmessage(self, request):
+        token = request.META.get('HTTP_AUTHORIZATION')
+        if token == None:
+            return Response({'error': 'Bearer token was not specified'})
+        token = token[7:]
+        claims = jwt.decode(token, verify=False)
+        email = claims['email']
+        user = User.objects.get(user_email = email)
 
+        body = json.loads(request.body)
+        if body == None:
+            return Response({'error': 'create body empty'})
+
+        #msg = Message.create(body['thread_id'], user.user_id, datetime.datetime.now(), body['text'], body['category_id'], 3, body['title'])
+        category = Categories.objects.get(category_id = body['category_id'])
+        msg = Message(msg_id=body['thread_id'], user_id=user, msg_time=datetime.datetime.now(), msg_text=body['text'], category_id=category, msg_thread=3, thread_title=body['title'])
+        msg.save()
+
+        return Response({
+            'msg_id': body['thread_id'],
+            'user_id': user.user_id,
+            'msg_time': datetime.datetime.now(),
+            'msg_text': body['text'],
+            'category_id': body['category_id'],
+            'msg_thread': 3,
+            'thread_title': body['title'],
+        })
 class UsergroupView(viewsets.ModelViewSet):
     queryset = Usergroup.objects.all()
     serializer_class = UsergroupSerializer

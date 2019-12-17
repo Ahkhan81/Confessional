@@ -229,6 +229,21 @@ class Message(models.Model):
    class Meta:
        managed = False
        db_table = 'message'
+   
+   @classmethod
+   def create(cls, msg_id, user_id, time, text, category_id, msg_thread, thread_title):
+        message = cls(user_email = email, username = displayName, user_type = 'Student')
+        message = cls(
+            msg_id = msg_id,
+            user_id = user_id,
+            msg_time = time,
+            msg_text = text,
+            category_id = category_id,
+            msg_thread = msg_thread,
+            thread_title = thread_title
+        )
+        message.save()
+        return message
 
 class Usergroup(models.Model):
    group_id = models.AutoField(db_column = "group_id", primary_key=True)

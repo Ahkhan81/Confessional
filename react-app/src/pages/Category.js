@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 import { sendGet, sendPost } from '../util/api';
+import { digestMessage, hexString } from '../util/hashword';
 import { ContentView } from '../components/ContentView';
 import { Paging } from '../components/Paging';
 import { useStore } from '../store/useStore';
@@ -124,33 +125,36 @@ export const Category = (props) => {
 
     const submitThread = (event) => {
         event.preventDefault();
-        const data = {
-            categoryId: category.id,
-            title: newThread.title,
-            body: newThread.body
-        };
-
-        const copy = { ...newThread };
-        copy.loading = true;
-        setNewThread(copy);
-        
-        sendPost(
-            `threads/create`,
-            data,
-            null,
-            (response) => {
-                // error
-                console.log(response);
-            },
-            (response) => {
-                getThreadPreviews();
-
-                copy.loading = false;
-                setNewThread(copy);
-                handleNewThreadModalClose();
-            },
-            user.token
-        );
+        digestMessage(Math.random() * 9999999999).then(digestValue => {
+            const generate = hexString(digestValue);
+            const data = {
+                category_id: category.id,
+                thread_id: generate,
+                title: newThread.title,
+                text: newThread.body
+            };
+    
+            const copy = { ...newThread };
+            copy.loading = true;
+            setNewThread(copy);
+            
+            sendPost(
+                `message/createmessage`,
+                data,
+                null,
+                (response) => {
+                    alert("Failed to create message");
+                },
+                (response) => {
+                    getThreadPreviews();
+    
+                    copy.loading = false;
+                    setNewThread(copy);
+                    handleNewThreadModalClose();
+                },
+                user.token
+            );
+        });
     };
 
     const disableSubmitThread = newThread.title.trim().length <= 0 || newThread.body.trim().length <= 0;
