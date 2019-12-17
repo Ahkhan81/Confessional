@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 import { sendGet, sendPost } from '../util/api';
-import { digestMessage, hexString } from '../util/hashword';
 import { ContentView } from '../components/ContentView';
 import { Paging } from '../components/Paging';
 import { useStore } from '../store/useStore';
@@ -125,36 +124,26 @@ export const Category = (props) => {
 
     const submitThread = (event) => {
         event.preventDefault();
-        digestMessage(Math.random() * 9999999999).then(digestValue => {
-            const generate = hexString(digestValue);
-            const data = {
-                category_id: category.id,
-                thread_id: generate,
-                title: newThread.title,
-                text: newThread.body
-            };
-    
-            const copy = { ...newThread };
-            copy.loading = true;
-            setNewThread(copy);
-            
-            sendPost(
-                `message/createmessage`,
-                data,
-                null,
-                (response) => {
-                    alert("Failed to create message");
-                },
-                (response) => {
-                    getThreadPreviews();
-    
-                    copy.loading = false;
-                    setNewThread(copy);
-                    handleNewThreadModalClose();
-                },
-                user.token
-            );
-        });
+        const data = {
+            category_id: category.id,
+            title: newThread.title,
+            text: newThread.body
+        };        const copy = { ...newThread };
+        copy.loading = true;
+        setNewThread(copy);        sendPost(
+            `message/createmessage`,
+            data,
+            null,
+            (response) => {
+                alert("Failed to create message");
+            },
+            (response) => {
+                getThreadPreviews();                copy.loading = false;
+                setNewThread(copy);
+                handleNewThreadModalClose();
+            },
+            user.token
+        );
     };
 
     const disableSubmitThread = newThread.title.trim().length <= 0 || newThread.body.trim().length <= 0;
@@ -248,10 +237,6 @@ export const Category = (props) => {
 
 const ThreadPreviewCard = (props) => {
     let history = useHistory();
-
-    function navigate() {
-        history.push(`/Thread/${props.id}`);
-    }
     
     const { id, image, title, bodySnippet, lastActivity } = props;
 
@@ -260,7 +245,7 @@ const ThreadPreviewCard = (props) => {
     return (
         <Card key={id} className="thread-preview">
             {image && <Card.Img variant="top" src={image} />}
-            <Card.Header className="clickable" onClick={navigate}>
+            <Card.Header className="clickable">
                 <h6 className="m-0">{title}</h6>
             </Card.Header>
             <Card.Body>
@@ -269,7 +254,6 @@ const ThreadPreviewCard = (props) => {
             <Card.Footer>
                 <Row className="px-2">
                     <small className="text-muted align-self-center mb-1 mr-auto">Created at {time}</small>
-                    <Button variant="dark" size="sm" onClick={navigate}>View</Button>
                 </Row>
             </Card.Footer>
         </Card>
