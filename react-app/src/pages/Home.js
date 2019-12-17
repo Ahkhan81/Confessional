@@ -8,7 +8,6 @@ export class Home extends React.Component {
     constructor() {
         super();
         this.state = {
-            expandDefault: ["Events"],
             categories: []
         };
 
@@ -30,18 +29,16 @@ export class Home extends React.Component {
     }
 
     render() {
-        const { expandDefault, categories } = this.state;
+        const { categories } = this.state;
         
         const content = categories.map((category) => {
             const { id, name } = category;
-            const isExpanded = expandDefault.includes(name);
             
             return (
                 <TopicCard
                     key={id} 
                     name={name} 
                     url={`/Category/${id}`}
-                    expanded={isExpanded}
                 />
             );
         });
