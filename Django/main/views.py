@@ -118,7 +118,8 @@ class MessageView(viewsets.ModelViewSet):
         if body == None:
             return Response({'error': 'create body empty'})
 
-        msg = Message.create(body['thread_id'], user.user_id, datetime.datetime.now(), body['text'], body['category_id'], 3, body['title'])
+        msg = Message(msg_id=body['thread_id'], user_id=user.user_id, msg_time=datetime.datetime.now(), msg_text=body['text'], category_id=body['category_id'], msg_thread=3, thread_title=body['title'])
+        msg.save()
         return Response({
             'msg_id': body['thread_id'],
             'user_id': user.user_id,
