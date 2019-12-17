@@ -8,6 +8,8 @@ from django.core import serializers
 from google.auth import jwt
 import json
 import datetime
+import random
+import string
 
 # Create your views here.
 
@@ -45,7 +47,7 @@ class CategoriesView(viewsets.ModelViewSet):
         
         for thread in messages:
             p = {
-                'id': thread.msg_thread,
+                'id': thread.msg_id,
                 'title': thread.thread_title,
                 'bodySnippet': thread.msg_text,
                 'lastActivity': thread.msg_time
@@ -70,8 +72,8 @@ class MessageView(viewsets.ModelViewSet):
     @action(detail=False, methods=['GET'])
     def thread(self, request):
         thread_id = request.GET.get('thread_id')
-        thread = Message.objects.filter(msg_thread = thread_id).get(thread_title__isnull = False)
-        messages = Message.objects.filter(msg_thread = thread_id).filter(thread_title = None)
+        thread = Message.objects.get(msg_id = thread_id)
+        #messages = Message.objects.filter(msg_thread = thread_id).filter(thread_title = None)
         
         convertMessages = []
         for message in messages:
@@ -119,12 +121,13 @@ class MessageView(viewsets.ModelViewSet):
             return Response({'error': 'create body empty'})
 
         #msg = Message.create(body['thread_id'], user.user_id, datetime.datetime.now(), body['text'], body['category_id'], 3, body['title'])
+        randomstring = ''.join(random.choice(string.ascii_lowercase) for i in range(16))
         category = Categories.objects.get(category_id = body['category_id'])
-        msg = Message(msg_id=body['thread_id'], user_id=user, msg_time=datetime.datetime.now(), msg_text=body['text'], category_id=category, msg_thread=3, thread_title=body['title'])
+        msg = Message(msg_id=randomstring, user_id=user, msg_time=datetime.datetime.now(), msg_text=body['text'], category_id=category, msg_thread=3, thread_title=body['title'])
         msg.save()
 
         return Response({
-            'msg_id': body['thread_id'],
+            'msg_id': randomstring,
             'user_id': user.user_id,
             'msg_time': datetime.datetime.now(),
             'msg_text': body['text'],
