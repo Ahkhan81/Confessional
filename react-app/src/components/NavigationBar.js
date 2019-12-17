@@ -68,7 +68,7 @@ export const NavigationBar = () => {
     if (!showLoggedIn) {
         accountInfo = (
             <GoogleLogin
-                clientId="36893320136-ssp84asi1l6aif9j279tpmuo98dk1ora.apps.googleusercontent.com"
+                clientId="36893320136-fb74tp6ekhrhd0jftlihkpmo610g5bgi.apps.googleusercontent.com"
                 buttonText="Sign in with Google"
                 onSuccess={onLoginSuccess}
                 onFailure={onLoginFailure}
@@ -94,7 +94,7 @@ export const NavigationBar = () => {
                 Signed in as <strong>{user.name}</strong>
                 <NavDropdown.Item>
                     <GoogleLogout
-                        clientId="36893320136-ssp84asi1l6aif9j279tpmuo98dk1ora.apps.googleusercontent.com"
+                        clientId="36893320136-fb74tp6ekhrhd0jftlihkpmo610g5bgi.apps.googleusercontent.com"
                         buttonText="Logout"
                         onLogoutSuccess={onLogoutSuccess}
                         isSignedIn={user.isSignedIn}
@@ -113,14 +113,7 @@ export const NavigationBar = () => {
             <Navbar.Collapse>
                 <Nav>
                     {/* Left side of  side of Navbar */}
-                    <InputGroup>
-                        <FormControl type="text" placeholder="Search" />
-                        <InputGroup.Append>
-                            <Button variant="success">
-                                <FontAwesomeIcon icon={faSearch} />
-                            </Button>
-                        </InputGroup.Append>
-                    </InputGroup>
+                    
                 </Nav>
                 <Nav className="ml-auto">
                     {/* Right side of  side of Navbar */}
