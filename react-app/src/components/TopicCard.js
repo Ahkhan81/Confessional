@@ -26,16 +26,13 @@ export const TopicCard = (props) => {
 
     return (
         <Accordion className="pb-2" {...expandCard}>
-            <Card className="clickable">
+            <Card className="clickable" onClick={navigate}>
                 <CardHeaderToggle eventKey={0}>
                     <Row className="px-2">
                         <h6 className="align-self-center mb-1 mr-auto">{props.name}</h6>
                         <Button size="sm" variant="dark" onClick={navigate}>View All</Button>
                     </Row>
                 </CardHeaderToggle>
-                <Accordion.Collapse eventKey={0}>
-                    <Card.Body>MOST RECENT TOPICS FOR {props.name.toUpperCase()} WILL SHOW HERE</Card.Body>
-                </Accordion.Collapse>
             </Card>
         </Accordion>
     );
