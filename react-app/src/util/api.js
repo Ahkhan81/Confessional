@@ -1,6 +1,6 @@
 // const BASE_URI = 'https://cd51c6cf-bd94-4f64-aa59-abace3266f96.mock.pstmn.io';
 // const BASE_URI = 'https://localhost:44309/api';
-const BASE_URI = 'http://localhost:8000/api';
+const BASE_URI = 'http://confess.pagekite.me/api';
 
 export async function sendGet(endpoint, data, onSent, onError, onSuccess, token) {
     send(endpoint, data, 'GET', onSent, onError, onSuccess, token);
