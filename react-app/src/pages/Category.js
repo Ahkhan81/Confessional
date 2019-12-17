@@ -24,21 +24,14 @@ export const Category = (props) => {
         name: ""
     });
 
-    const [threadPreviewResults, setThreadPreviewResults] = useState({
-        settings: {
-            page: 0,
-            itemsPerPage: 8
-        },
-        items: [],
-        totalItems: 0,
-        totalResultItems: 0
-    });
+    const [threadPreviewResults, setThreadPreviewResults] = useState([]);
 
     const [loading, setLoading] = useState(true);
     const [newThread, setNewThread] = useState({
         showModal: false,
         title: "",
-        body: ""
+        body: "",
+        loading: false
     });
 
     // On initial mount.
@@ -47,16 +40,13 @@ export const Category = (props) => {
     }, []);
 
     // On state update
-    useEffect(() => {
-        getThreadPreviews();
-    }, [threadPreviewResults.settings.page]);
 
     const getThreadPreviews = () => {
         let { id } = category;
         
         // Get Thread Previews by Topic ID.
         sendGet(`categories/${id}/threadpreviews`,
-        { ...threadPreviewResults.settings },
+        null,
         () => {
             // onSent
             setLoading(true);
@@ -70,18 +60,11 @@ export const Category = (props) => {
             // onSuccess
             setLoading(false);
             setCategory(response.category);
-            setThreadPreviewResults(response.results);
+            setThreadPreviewResults(response.threadPreviews);
         });
     };
 
-    const handlePageChange = (page) => {
-        let results = {...threadPreviewResults};
-        results.settings.page = page;
-        setThreadPreviewResults(results);
-    };
-
     // Begin render
-    const { settings, items, totalItems } = threadPreviewResults;
 
     let threadRows = [];
     let threadCells = [];
@@ -94,7 +77,7 @@ export const Category = (props) => {
         threadCells = [];
     }
     
-    items.forEach((threadPreview, index) => {
+    threadPreviewResults.forEach((threadPreview, index) => {
         threadCells.push(
             <Col key={index} lg={3} className="p-0">
                 <ThreadPreviewCard {...threadPreview} />
@@ -126,9 +109,17 @@ export const Category = (props) => {
     );
 
     const handleNewThreadModalClose = () => {
-        let copy = {...newThread}
-        copy.showModal = false;
-        setNewThread(copy);
+        if (newThread.loading) {
+            return;
+        }
+
+        // Reset modal
+        setNewThread({
+            showModal: false,
+            title: "",
+            body: "",
+            loading: false
+        });
     };
 
     const submitThread = (event) => {
@@ -138,6 +129,11 @@ export const Category = (props) => {
             title: newThread.title,
             body: newThread.body
         };
+
+        const copy = { ...newThread };
+        copy.loading = true;
+        setNewThread(copy);
+        
         sendPost(
             `threads/create`,
             data,
@@ -147,7 +143,11 @@ export const Category = (props) => {
                 console.log(response);
             },
             (response) => {
-                console.log(response);
+                getThreadPreviews();
+
+                copy.loading = false;
+                setNewThread(copy);
+                handleNewThreadModalClose();
             },
             user.token
         );
@@ -196,13 +196,18 @@ export const Category = (props) => {
                         </Form.Row>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button size="sm" variant="secondary" onClick={handleNewThreadModalClose}>
+                        <Button 
+                            size="sm" 
+                            variant="secondary" 
+                            disabled={newThread.loading}
+                            onClick={handleNewThreadModalClose}
+                        >
                             Close
                         </Button>
                         <Button
                             size="sm"
                             variant="success"
-                            disabled={disableSubmitThread}
+                            disabled={disableSubmitThread || newThread.loading}
                             type="submit"
                             onClick={submitThread}
                         >
@@ -215,13 +220,13 @@ export const Category = (props) => {
             {/* Content */}
             {user.isLoggedIn && newThreadAction}
             {threadRows}
-            <Row className="mx-0">
+            {/* <Row className="mx-0">
                 <Paging
                     {...settings}
                     totalItems={totalItems} 
                     onPageChange={handlePageChange}
                 />
-            </Row>
+            </Row> */}
         </React.Fragment>
     );
 
@@ -245,6 +250,8 @@ const ThreadPreviewCard = (props) => {
     }
     
     const { id, image, title, bodySnippet, lastActivity } = props;
+
+    const time = new Date(lastActivity).toDateString();
     
     return (
         <Card key={id} className="thread-preview">
@@ -257,7 +264,7 @@ const ThreadPreviewCard = (props) => {
             </Card.Body>
             <Card.Footer>
                 <Row className="px-2">
-                    <small className="text-muted align-self-center mb-1 mr-auto">Last activity {lastActivity}</small>
+                    <small className="text-muted align-self-center mb-1 mr-auto">Created at {time}</small>
                     <Button variant="dark" size="sm" onClick={navigate}>View</Button>
                 </Row>
             </Card.Footer>

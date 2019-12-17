@@ -31,47 +31,20 @@ export const Thread = (props) => {
         }
     });
 
-    const [messageResults, setMessageResults] = useState({
-        settings: {
-            page: 0,
-            itemsPerPage: 8
-        },
-        items: [],
-        totalItems: 0,
-        totalResultItems: 0
-    });
-
-    const [messageRefresh, setMessageRefresh] = useState({
-        execute: false,
-        waiting: false
-    });
-
-    const refreshMessages = () => {
-        if (messageRefresh.execute && !messageRefresh.waiting) {
-            getMessages();
-        }
-        setTimeout(refreshMessages, 500);
-    };
-
-    refreshMessages();
+    const [messageResults, setMessageResults] = useState([]);
 
     // Get Thread info by Thread ID.
     // This is called on initial component load.
     useEffect(() => {
-        sendGet(`threads/${thread.id}`,
-            { ...messageResults.settings },
-            () => {
-                // onSent
-                setMessageRefresh(false);
-            },
+        sendGet(`message/thread`,
+            { thread_id: thread.id },
+            null,
             (error) => {
                 // onError
                 console.log(error);
-                setMessageRefresh(false);
             },
             (response) => {
                 // onSuccess
-                setMessageRefresh(true);
                 const { category } = response;
 
                 // Category
@@ -79,47 +52,33 @@ export const Thread = (props) => {
                 setBreadCrumbs(breadCrumbs);
 
                 // Thread
-                setThread({
-                    id: response.id,
-                    title: response.title,
-                    body: response.body,
-                    timePosted: response.timePosted,
-                    user: response.user
-                });
+                setThread(response.thread);
                 
                 // Messages
-                setMessageResults(response.messageResults);
+                setMessageResults(response.messages);
             }
         );
     }, []);
 
-    // Get messages when the page changes
-    useEffect(() => {
-        getMessages();
-    }, [messageResults.settings.page]);
-
     const getMessages = () => {
+        const settings = messageResults.settings;
+        console.log(settings);
         sendGet(
             `threads/${thread.id}/messages`,
-            {...messageResults.settings},
-            () => {
-                setMessageRefresh(false);
-            },
-            (error) => {
-                setMessageRefresh(false);
+            { page: settings.page, itemsPerPage: settings.itemsPerPage },
+            null,
+            (response) => {
+                // On Error
+                alert(response);
             },
             (response) => {
-                setMessageRefresh(true);
-                setMessageResults(response);
+                const responseSettings = response.settings;
+                const resultSettings = messageResults.settings;
+                if (responseSettings.page === resultSettings.page && responseSettings.itemsPerPage === resultSettings.itemsPerPage) {
+                    setMessageResults(response);
+                }
             }
         );
-    }
-
-    const handlePageChange = (page) => {
-        // React won't recognize state change for objects unless you copy and mutate directly.
-        let newMessageResults = {...messageResults};
-        newMessageResults.settings.page = page;
-        setMessageResults(newMessageResults);
     }
 
     const content = (
@@ -127,18 +86,14 @@ export const Thread = (props) => {
             <Col className="px-0">
                 <h4>{thread.title}</h4>
                 <p className="mb-0">{thread.body}</p>
-                <small className="text-muted align-self-center my-0">Posted {thread.timePosted} by {thread.user.displayName}</small>
+                <small className="text-muted align-self-center my-0">Posted {new Date(thread.timePosted).toDateString()} by {thread.user.displayName}</small>
                 <hr />
                 <h5>Messages</h5>
                 <MessageReply 
                     threadId={thread.id} 
-                    user={user} 
-                    onPostSuccess={getMessages} 
+                    user={user}
                 />
-                <MessageView 
-                    results={messageResults} 
-                    onPageChange={handlePageChange} 
-                />
+                <MessageView results={messageResults} />
             </Col>
         </React.Fragment>
     );
@@ -154,23 +109,23 @@ export const Thread = (props) => {
 }
 
 const MessageReply = (props) => {
-    const { threadId, onPostSuccess } = props;
+    const { threadId } = props;
     const { state: { user } } = useStore();
 
     const [message, setMessage] = useState("");
 
     const postMessage = () => {
         sendPost(
-            `threads/${threadId}/messages/post`,
-            { text: message },
+            `messages/post`,
+            { thread_id: threadId, text: message },
             () => {
 
             },
             (response) => {
-                alert("Fialed to post...");
+                alert("Failed to post...");
             },
             (response) => {
-                onPostSuccess();
+                // onPostSuccess();
                 setMessage("");
             },
             user.token
@@ -210,21 +165,12 @@ const MessageReply = (props) => {
 };
 
 const MessageView = (props) => {
-    const messages = props.results.items;
-    const { settings, totalItems } = props.results;
-    const onPageChange = props.onPageChange;
+    const messages = props.results;
 
     return (
         <Container fluid className="px-0">
             {messages.map((message) => <Message key={message.id} {...message} />)}
             {messages.length === 0 && <h3 className="mx-auto">No Messages :(</h3>}
-            <Row className="mx-0 pt-2">
-                <Paging
-                    {...settings}
-                    totalItems={totalItems} 
-                    onPageChange={onPageChange}
-                />
-            </Row>
         </Container>
     );
 };
