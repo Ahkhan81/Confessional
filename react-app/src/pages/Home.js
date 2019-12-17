@@ -8,7 +8,7 @@ export class Home extends React.Component {
     constructor() {
         super();
         this.state = {
-            expandDefault: ["Events"],
+            expandDefault: [],
             categories: []
         };
 
